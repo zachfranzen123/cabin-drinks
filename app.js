@@ -109,7 +109,7 @@ function mixedBuilder() {
 function takeView() {
   ensureSelection();
   const order=currentOrder(), active=currentDrink();
-  const visibleRows=rows(), exitAnchor=state.orientation==="front"?16:(visibleRows.includes(17)?17:16);
+  const visibleRows=rows(), exitAnchor=state.orientation==="front"?16:10;
   const map=visibleRows.map(row => `<div class="seat-row ${row===exitAnchor?"exit-start":""}">${row===exitAnchor?`<div class="exit-label">EXIT ROW${visibleRows.includes(17)?"S":""}</div>`:""}<strong>${row}</strong>${seatLetters().map(letter => { const seat=`${row}${letter}`, item=state.orders[seat], total=item?.drinks.reduce((n,drink)=>n+drink.qty,0); return `<button data-seat="${seat}" class="${state.seat===seat?"selected":""} ${item?"ordered":""}" aria-label="${seat}${item?`, ${total} drinks`:""}">${state.seat===seat?seat:letter}${item?`<span>${total}</span>`:""}</button>`; }).join("")}</div>`).join("");
   const drinks=menu[state.category].map(drink => `<button data-drink="${esc(drink)}"><strong>${esc(label(drink))}</strong>${showSubtitle(drink)?`<span>${esc(drink)}</span>`:""}<em>+ Add</em></button>`).join("");
   const drinkChooser=state.category==="Mixed Drinks"?mixedBuilder():`<div class="drink-grid">${drinks}</div>`;
