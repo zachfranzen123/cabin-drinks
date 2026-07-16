@@ -5,14 +5,15 @@ const menu = {
   "Mixed Drinks": [],
   "Mixers": ["Tonic Water", "Polar Original Seltzer", "Polar Cranberry Lime Seltzer", "Canada Dry Ginger Ale", "Bloody Mary Mix"],
   "Sodas": ["Coca-Cola", "Diet Coke", "Coke Zero", "Sprite"],
-  "Alcohol": ["Broken Earth Red Blend", "Waterbrook White Blend", "Cuvée 89 Brut Sparkling Wine", "Fremont Cloud Cruiser IPA", "Fremont Golden Pilsner", "Jack Daniel’s Whiskey", "Buffalo Trace Bourbon", "Glenfarclas Scotch", "Dulce Vida Organic Tequila Blanco", "Bacardí Rum", "Aviation Gin", "Tito’s Handmade Vodka", "Crater Lake Hazelnut Espresso Vodka", "Five Farms Irish Cream", "Straightaway Blanco Margarita", "Straightaway Oregon Old Fashioned", "HOP WTR Blood Orange"],
+  "Alcohol": ["Tito’s Handmade Vodka", "Buffalo Trace Bourbon", "Jack Daniel’s Whiskey", "Glenfarclas Scotch", "Aviation Gin", "Bacardí Rum", "Dulce Vida Organic Tequila Blanco", "Crater Lake Hazelnut Espresso Vodka", "Five Farms Irish Cream", "Broken Earth Red Blend", "Waterbrook White Blend", "Cuvée 89 Brut Sparkling Wine", "Fremont Cloud Cruiser IPA", "Fremont Golden Pilsner", "Straightaway Blanco Margarita", "Straightaway Oregon Old Fashioned", "HOP WTR Blood Orange"],
   "Coffee & Teas": ["Stumptown Coffee", "Stumptown Decaf Coffee", "Stash English Breakfast Tea", "Stash Peppermint Tea", "Stash Jasmine Blossom Green Tea", "Stumptown Cold Brew Copilot"],
   "Juice & Water": ["Boxed Water", "Apple Juice", "Cranberry Juice", "Orange Juice", "Passion Orange Guava Juice"]
 };
 const shortNames = {
   "Broken Earth Red Blend":"Red Wine", "Waterbrook White Blend":"White Wine", "Cuvée 89 Brut Sparkling Wine":"Sparkling Wine",
-  "Fremont Cloud Cruiser IPA":"Cloud Cruiser IPA", "Fremont Golden Pilsner":"Golden Pilsner", "Dulce Vida Organic Tequila Blanco":"Dulce Vida Tequila",
-  "Crater Lake Hazelnut Espresso Vodka":"Espresso Vodka", "Straightaway Blanco Margarita":"Blanco Margarita", "Straightaway Oregon Old Fashioned":"Old Fashioned",
+  "Tito’s Handmade Vodka":"Vodka", "Buffalo Trace Bourbon":"Bourbon", "Jack Daniel’s Whiskey":"Whiskey", "Glenfarclas Scotch":"Scotch",
+  "Aviation Gin":"Gin", "Bacardí Rum":"Rum", "Dulce Vida Organic Tequila Blanco":"Tequila", "Crater Lake Hazelnut Espresso Vodka":"Espresso Vodka", "Five Farms Irish Cream":"Irish Cream",
+  "Fremont Cloud Cruiser IPA":"IPA", "Fremont Golden Pilsner":"Pilsner", "Straightaway Blanco Margarita":"Margarita", "Straightaway Oregon Old Fashioned":"Old Fashioned", "HOP WTR Blood Orange":"Nonalcoholic Hop Water",
   "Stash Jasmine Blossom Green Tea":"Jasmine Green Tea", "Passion Orange Guava Juice":"POG Juice"
 };
 
@@ -59,7 +60,7 @@ const seatLetters = () => {
   const letters=state.cabin === "first" ? firstSeatLetters : premiumSeatLetters;
   return state.orientation === "front" ? letters : [...letters].reverse();
 };
-const spirits = new Set(["Jack Daniel’s Whiskey","Buffalo Trace Bourbon","Glenfarclas Scotch","Dulce Vida Organic Tequila Blanco","Bacardí Rum","Aviation Gin","Tito’s Handmade Vodka","Crater Lake Hazelnut Espresso Vodka","Five Farms Irish Cream"]);
+const spirits = new Set(["Tito’s Handmade Vodka","Buffalo Trace Bourbon","Jack Daniel’s Whiskey","Glenfarclas Scotch","Aviation Gin","Bacardí Rum","Dulce Vida Organic Tequila Blanco","Crater Lake Hazelnut Espresso Vodka","Five Farms Irish Cream"]);
 const spiritOptions = [...spirits];
 const alcoholOptions = [...spiritOptions,"Cuvée 89 Brut Sparkling Wine"];
 const mixerOptions = ["Tonic Water","Polar Original Seltzer","Polar Cranberry Lime Seltzer","Canada Dry Ginger Ale","Bloody Mary Mix","Coca-Cola","Diet Coke","Coke Zero","Sprite","Cranberry Juice","Orange Juice","Apple Juice","Passion Orange Guava Juice","Stumptown Coffee","Stumptown Decaf Coffee"];
@@ -135,7 +136,7 @@ function takeView() {
   const visibleRows=rows(), exitAnchor=state.orientation==="front"?16:10;
   const map=visibleRows.map(row => `<div class="seat-row ${row===exitAnchor?"exit-start":""}">${row===exitAnchor?`<div class="exit-label">EXIT ROW${visibleRows.includes(17)?"S":""}</div>`:""}<strong>${row}</strong>${seatLetters().map(letter => { const seat=`${row}${letter}`, item=state.orders[seat], total=item?item.drinks.reduce((n,drink)=>n+drink.qty,0)+(item.foods||[]).reduce((n,food)=>n+food.qty,0):0; return `<button data-seat="${seat}" class="${state.seat===seat?"selected":""} ${item?"ordered":""}" aria-label="${seat}${item?`, ${total} items`:""}">${state.seat===seat?seat:letter}${item?`<span>${total}</span>`:""}</button>`; }).join("")}</div>`).join("");
   const drinks=(menu[state.category]||[]).map(drink => `<button data-drink="${esc(drink)}"><strong>${esc(label(drink))}</strong>${showSubtitle(drink)?`<span>${esc(drink)}</span>`:""}<em>+ Add</em></button>`).join("");
-  const drinkChooser=state.category==="Food"?foodPanel(order):state.category==="Mixed Drinks"?mixedBuilder():`<div class="drink-grid">${drinks}</div>`;
+  const drinkChooser=state.category==="Food"?foodPanel(order):state.category==="Mixed Drinks"?mixedBuilder():`<div class="drink-grid ${state.category==="Alcohol"?"compact-alcohol":""}">${drinks}</div>`;
   const seatTotal=order?.drinks.reduce((n,drink)=>n+drink.qty,0)||0;
   const selectedDrinks = order?.drinks.length ? `<div class="seat-order-list"><p>${seatTotal} drink${seatTotal===1?"":"s"} for ${state.seat}</p>${order.drinks.map((drink,index)=>`<div class="drink-line ${index===state.activeDrink?"active":""}"><button data-select-drink="${index}" class="drink-name"><span><strong>${esc(displayName(drink))}${drink.pour===2?" · Double":drink.qty===2&&spirits.has(drink.drink)?" · Double":""}</strong><small>${esc(details(drink))}</small></span></button><div class="drink-quantity"><button data-drink-delta="-1" data-index="${index}" aria-label="Remove one">−</button><strong>${drink.qty}</strong><button data-drink-delta="1" data-index="${index}" aria-label="Add one">+</button></div><button data-remove-drink="${index}" class="remove-drink" aria-label="Remove ${esc(displayName(drink))}">×</button></div>`).join("")}</div>` : "";
   const selectedFoods = order?.foods?.length ? `<div class="seat-food-list"><p>Food for ${state.seat}</p>${order.foods.map(food=>{const item=state.foodMenu.find(x=>x.id===food.id);return `<div><span><strong>${esc(item?.name||"Food item")}</strong><small>Reserved</small></span><div class="drink-quantity"><button data-food-delta="${food.id}" data-delta="-1">−</button><strong>${food.qty}</strong><button data-food-delta="${food.id}" data-delta="1" ${foodRemaining(item||{id:food.id,loaded:food.qty})?"":"disabled"}>+</button></div><button class="remove-drink" data-food-remove="${food.id}">×</button></div>`}).join("")}</div>`:"";
