@@ -19,8 +19,14 @@ const shortNames = {
 const saved = JSON.parse(localStorage.getItem("cabin-drinks-orders") || "{}");
 // Transparently upgrade orders saved by the first version of the app.
 Object.values(saved).forEach(order => {
-  if (!order.drinks) order.drinks = [{drink:order.drink, category:order.category, modifiers:order.modifiers || [], creamer:null, creamQty:0, sugarQty:0}];
-  order.drinks.forEach(drink => drink.qty = drink.qty || 1);
+  if (!order.drinks) order.drinks = [{drink:order.drink, category:order.category, modifiers:order.modifiers || [], creamer:null, creamQty:0, sweetenerType:null, sweetenerQty:0}];
+  order.drinks.forEach(drink => {
+    drink.qty = drink.qty || 1;
+    drink.sweetenerQty = drink.sweetenerQty || drink.sugarQty || (drink.modifiers?.includes("Sweetener") ? 1 : 0);
+    drink.sweetenerType = drink.sweetenerType || (drink.modifiers?.includes("Sweetener") ? "Sweetener" : drink.sweetenerQty ? "Sugar" : null);
+    drink.modifiers = (drink.modifiers || []).filter(item => item !== "Sweetener");
+    delete drink.sugarQty;
+  });
   delete order.drink; delete order.category; delete order.modifiers;
 });
 const state = {
@@ -34,6 +40,7 @@ if (state.cabin === "first") state.seat = "1A";
 const app = document.querySelector("#app");
 const esc = value => String(value).replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
 const label = drink => shortNames[drink] || drink;
+const showSubtitle = drink => label(drink) !== drink && drink !== "Stash Jasmine Blossom Green Tea";
 const orderList = () => Object.values(state.orders).sort((a,b) => parseInt(a.seat)-parseInt(b.seat) || a.seat.localeCompare(b.seat));
 const drinkCount = () => orderList().reduce((sum, order) => sum + order.drinks.reduce((n, drink) => n + drink.qty, 0), 0);
 const rows = () => state.cabin === "first" ? [1,2,3,4] : [6,7,8,9,10,16].concat(["737-900","737 MAX 9"].includes(state.plane) ? [17] : []);
@@ -48,14 +55,15 @@ const drinkTitle = drink => {
   const name=displayName(drink), pour=drink.pour===2?`Double ${name}`:name;
   return drink.qty>1?`${pour} ×${drink.qty}`:pour;
 };
-const isHot = drink => drink.category === "Coffee & Teas" && !drink.drink.includes("Cold Brew");
-const modifiersFor = drink => drink.category === "Coffee & Teas"
-  ? (drink.drink.includes("Cold Brew") ? ["Ice","No Ice","Sweetener"] : ["Sweetener","Lemon packet"])
+const isCoffeeTea = drink => drink.category === "Coffee & Teas";
+const isCoffee = drink => isCoffeeTea(drink) && (drink.drink.includes("Coffee") || drink.drink.includes("Cold Brew"));
+const modifiersFor = drink => isCoffeeTea(drink)
+  ? (drink.drink.includes("Cold Brew") ? ["Ice","No Ice"] : isCoffee(drink) ? [] : ["Lemon packet"])
   : ["Ice","No Ice","Lemon packet","Lime packet","Grapefruit packet"];
 const details = drink => {
   const parts = drink.category === "Mixed Drinks" ? [`${label(drink.spirit)}${drink.pour===2?" ×2":""}`, label(drink.mixer), ...drink.modifiers] : [...drink.modifiers];
   if (drink.creamQty) parts.push(`${drink.creamQty} ${drink.creamer === "Oat" ? "oat milk" : "dairy cream"}`);
-  if (drink.sugarQty) parts.push(`${drink.sugarQty} sugar${drink.sugarQty === 1 ? "" : "s"}`);
+  if (drink.sweetenerQty) parts.push(`${drink.sweetenerQty} ${(drink.sweetenerType || "Sugar").toLowerCase()}${drink.sweetenerQty === 1 ? "" : "s"}`);
   return parts.join(" · ") || "Standard";
 };
 
@@ -78,6 +86,11 @@ function quantityControl(kind, title, qty) {
   return `<div class="quantity-control"><span>${title}</span><div><button data-quantity="${kind}" data-delta="-1" aria-label="Less ${title}">−</button><strong>${qty}</strong><button data-quantity="${kind}" data-delta="1" aria-label="More ${title}">+</button></div></div>`;
 }
 
+function coffeeTeaControls(drink) {
+  if(!isCoffeeTea(drink)) return "";
+  return `<div class="addition-block"><div class="addition-choice"><span>Creamer</span><button data-addition="creamer" data-value="Dairy" class="${drink.creamer==="Dairy"?"active":""}">Dairy</button><button data-addition="creamer" data-value="Oat" class="${drink.creamer==="Oat"?"active":""}">Oat milk</button></div>${quantityControl("cream","Cream quantity",drink.creamQty||0)}</div><div class="addition-block"><div class="addition-choice"><span>Sweetener</span><button data-addition="sweetener" data-value="Sugar" class="${drink.sweetenerType==="Sugar"?"active":""}">Sugar</button><button data-addition="sweetener" data-value="Sweetener" class="${drink.sweetenerType==="Sweetener"?"active":""}">Sweetener</button></div>${quantityControl("sweetener","Sweetener quantity",drink.sweetenerQty||0)}</div>`;
+}
+
 function mixedBuilder() {
   const b=state.builder;
   return `<div class="mixed-builder"><div class="quick-build"><div><strong>Bloody Mary</strong><span>Tito’s · Bloody Mary Mix · Ice</span></div><button data-quick-mixed="bloody">+ Add</button></div><div class="builder-title"><strong>Build Your Own</strong><span>Choose one spirit and one mixer</span></div><label>1 · Spirit</label><div class="builder-scroll">${spiritOptions.map(item=>`<button data-build-spirit="${esc(item)}" class="${b.spirit===item?"active":""}">${esc(label(item))}</button>`).join("")}</div><label>2 · Mixer</label><div class="builder-scroll">${mixerOptions.map(item=>`<button data-build-mixer="${esc(item)}" class="${b.mixer===item?"active":""}">${esc(label(item))}</button>`).join("")}</div><label>3 · Pour</label><div class="builder-options"><button data-build-pour="1" class="${b.pour===1?"active":""}">Single</button><button data-build-pour="2" class="${b.pour===2?"active":""}">Double</button></div><label>4 · Finish</label><div class="builder-scroll">${["Ice","No Ice","Lemon packet","Lime packet","Grapefruit packet"].map(mod=>`<button data-builder-modifier="${mod}" class="${b.modifiers.includes(mod)?"active":""}">${mod}</button>`).join("")}</div><button data-add-mixed="custom" class="add-build" ${b.spirit&&b.mixer?"":"disabled"}>Add mixed drink to ${state.seat}</button></div>`;
@@ -87,13 +100,13 @@ function takeView() {
   ensureSelection();
   const order=currentOrder(), active=currentDrink();
   const map=rows().map(row => `<div class="seat-row ${row===16?"exit-start":""}">${row===16?`<div class="exit-label">EXIT ROW${rows().includes(17)?"S":""}</div>`:""}<strong>${row}</strong>${seatLetters().map(letter => { const seat=`${row}${letter}`, item=state.orders[seat], total=item?.drinks.reduce((n,drink)=>n+drink.qty,0); return `<button data-seat="${seat}" class="${state.seat===seat?"selected":""} ${item?"ordered":""}" aria-label="${seat}${item?`, ${total} drinks`:""}">${state.seat===seat?seat:letter}${item?`<span>${total}</span>`:""}</button>`; }).join("")}</div>`).join("");
-  const drinks=menu[state.category].map(drink => `<button data-drink="${esc(drink)}"><strong>${esc(label(drink))}</strong>${label(drink)!==drink?`<span>${esc(drink)}</span>`:""}<em>+ Add</em></button>`).join("");
+  const drinks=menu[state.category].map(drink => `<button data-drink="${esc(drink)}"><strong>${esc(label(drink))}</strong>${showSubtitle(drink)?`<span>${esc(drink)}</span>`:""}<em>+ Add</em></button>`).join("");
   const drinkChooser=state.category==="Mixed Drinks"?mixedBuilder():`<div class="drink-grid">${drinks}</div>`;
   const seatTotal=order?.drinks.reduce((n,drink)=>n+drink.qty,0)||0;
   const selectedDrinks = order?.drinks.length ? `<div class="seat-order-list"><p>${seatTotal} drink${seatTotal===1?"":"s"} for ${state.seat}</p>${order.drinks.map((drink,index)=>`<div class="drink-line ${index===state.activeDrink?"active":""}"><button data-select-drink="${index}" class="drink-name"><span><strong>${esc(displayName(drink))}${drink.pour===2?" · Double":drink.qty===2&&spirits.has(drink.drink)?" · Double":""}</strong><small>${esc(details(drink))}</small></span></button><div class="drink-quantity"><button data-drink-delta="-1" data-index="${index}" aria-label="Remove one">−</button><strong>${drink.qty}</strong><button data-drink-delta="1" data-index="${index}" aria-label="Add one">+</button></div><button data-remove-drink="${index}" class="remove-drink" aria-label="Remove ${esc(displayName(drink))}">×</button></div>`).join("")}</div>` : "";
-  const modifierEditor = active ? `<div class="drink-editor"><div class="editor-title"><strong>Edit ${esc(displayName(active))}</strong><span>Changes apply to this drink only</span></div>${active.category==="Mixed Drinks"?`<div class="pour-editor"><span>Pour</span><button data-edit-pour="1" class="${active.pour===1?"active":""}">Single</button><button data-edit-pour="2" class="${active.pour===2?"active":""}">Double</button></div>`:""}<div class="modifier-row">${modifiersFor(active).map(mod=>`<button data-modifier="${mod}" class="${active.modifiers.includes(mod)?"active":""}">${mod}</button>`).join("")}</div>${isHot(active)?`<div class="cream-type"><span>Creamer</span><button data-creamer="Dairy" class="${active.creamer==="Dairy"?"active":""}">Dairy</button><button data-creamer="Oat" class="${active.creamer==="Oat"?"active":""}">Oat milk</button></div><div class="quantity-row">${quantityControl("cream","Creams",active.creamQty)}${quantityControl("sugar","Sugars",active.sugarQty)}</div>`:""}</div>` : "";
+  const modifierEditor = active ? `<div class="drink-editor"><div class="editor-title"><strong>Edit ${esc(displayName(active))}</strong><span>Changes apply to this drink only</span></div>${active.category==="Mixed Drinks"?`<div class="pour-editor"><span>Pour</span><button data-edit-pour="1" class="${active.pour===1?"active":""}">Single</button><button data-edit-pour="2" class="${active.pour===2?"active":""}">Double</button></div>`:""}${modifiersFor(active).length?`<div class="modifier-row">${modifiersFor(active).map(mod=>`<button data-modifier="${mod}" class="${active.modifiers.includes(mod)?"active":""}">${mod}</button>`).join("")}</div>`:""}${coffeeTeaControls(active)}</div>` : "";
   const head=state.cabin==="first"?`<div class="seat-head"><span></span><b>A</b><b>C</b><i></i><b>D</b><b>F</b></div>`:`<div class="seat-head"><span></span><b>A</b><b>B</b><b>C</b><i></i><b>D</b><b>E</b><b>F</b></div>`;
-  return `<div class="cabin-tabs"><button data-cabin="first" class="${state.cabin==="first"?"active":""}">First Class</button><button data-cabin="premium" class="${state.cabin==="premium"?"active":""}">Premium</button></div><section class="seat-map ${state.cabin==="first"?"first-map":""}" aria-label="${state.cabin==="first"?"First":"Premium"} Class seat map">${head}${map}</section><section class="order-panel"><div class="selected-line"><div><span>Selected seat</span><strong>${state.seat}</strong></div></div>${selectedDrinks}<div class="category-tabs">${Object.keys(menu).map(cat=>`<button data-category="${cat}" class="${state.category===cat?"active":""}">${cat}</button>`).join("")}</div>${drinkChooser}${modifierEditor}</section><footer class="order-tray"><div><span>${seatTotal?`${state.seat} · ${seatTotal} drink${seatTotal===1?"":"s"}`:`${state.seat} · Add a drink`}</span><small>Tap again to increase quantity</small></div><button data-mode="prepare" ${drinkCount()?"":"disabled"}>Prepare · ${drinkCount()}</button></footer>`;
+  return `<div class="service-tools"><span>${drinkCount()?`${drinkCount()} active drink${drinkCount()===1?"":"s"}`:"No active orders"}</span><button data-action="clear" ${drinkCount()?"":"disabled"}>Clear orders</button></div><div class="cabin-tabs"><button data-cabin="first" class="${state.cabin==="first"?"active":""}">First Class</button><button data-cabin="premium" class="${state.cabin==="premium"?"active":""}">Premium</button></div><section class="seat-map ${state.cabin==="first"?"first-map":""}" aria-label="${state.cabin==="first"?"First":"Premium"} Class seat map">${head}${map}</section><section class="order-panel"><div class="selected-line"><div><span>Selected seat</span><strong>${state.seat}</strong></div></div>${selectedDrinks}<div class="category-tabs">${Object.keys(menu).map(cat=>`<button data-category="${cat}" class="${state.category===cat?"active":""}">${cat}</button>`).join("")}</div>${drinkChooser}${modifierEditor}</section><footer class="order-tray"><div><span>${seatTotal?`${state.seat} · ${seatTotal} drink${seatTotal===1?"":"s"}`:`${state.seat} · Add a drink`}</span><small>Tap again to increase quantity</small></div><button data-mode="prepare" ${drinkCount()?"":"disabled"}>Prepare · ${drinkCount()}</button></footer>`;
 }
 
 function prepareView() {
@@ -102,7 +115,7 @@ function prepareView() {
 }
 function deliverView() {
   const orders=orderList();
-  return `<section class="workflow-panel"><div class="workflow-heading"><div><p class="eyebrow">Cabin view</p><h2>Deliver drinks</h2></div><button data-mode="prepare" class="secondary">Back</button></div>${orders.length?`<div class="delivery-grid">${orders.map(order=>{const total=order.drinks.reduce((n,drink)=>n+drink.qty,0);return `<button data-deliver="${order.seat}" class="${order.delivered?"delivered":""}"><strong>${order.seat}</strong><span>${order.drinks.map(drink=>`${esc(label(drink.drink))}${drink.qty>1?` ×${drink.qty}`:""}`).join(" + ")}</span><small>${order.delivered?"Delivered ✓":`${total} drink${total===1?"":"s"} · Tap when delivered`}</small></button>`}).join("")}</div>`:empty()}<button data-action="clear" class="clear">Clear flight</button></section>`;
+  return `<section class="workflow-panel"><div class="workflow-heading"><div><p class="eyebrow">Cabin view</p><h2>Deliver drinks</h2></div><button data-mode="prepare" class="secondary">Back</button></div>${orders.length?`<div class="delivery-grid">${orders.map(order=>{const total=order.drinks.reduce((n,drink)=>n+drink.qty,0);return `<button data-deliver="${order.seat}" class="${order.delivered?"delivered":""}"><strong>${order.seat}</strong><span>${order.drinks.map(drink=>`${esc(label(drink.drink))}${drink.qty>1?` ×${drink.qty}`:""}`).join(" + ")}</span><small>${order.delivered?"Delivered ✓":`${total} drink${total===1?"":"s"} · Tap when delivered`}</small></button>`}).join("")}</div>`:empty()}</section>`;
 }
 function empty(){return '<div class="empty"><strong>No drink orders yet</strong><span>Choose a seat to begin.</span></div>'}
 function render(){app.innerHTML=header()+(state.mode==="take"?takeView():state.mode==="prepare"?prepareView():deliverView())}
@@ -120,16 +133,16 @@ app.addEventListener("click",event=>{
   if(target.dataset.buildMixer)state.builder.mixer=target.dataset.buildMixer;
   if(target.dataset.buildPour)state.builder.pour=Number(target.dataset.buildPour);
   if(target.dataset.builderModifier){const mod=target.dataset.builderModifier,b=state.builder;b.modifiers=b.modifiers.includes(mod)?b.modifiers.filter(x=>x!==mod):[...b.modifiers,mod];if(mod==="Ice")b.modifiers=b.modifiers.filter(x=>x!=="No Ice");if(mod==="No Ice")b.modifiers=b.modifiers.filter(x=>x!=="Ice")}
-  if(target.dataset.quickMixed){const order=state.orders[state.seat]||(state.orders[state.seat]={seat:state.seat,drinks:[],delivered:false});const found=order.drinks.findIndex(item=>item.preset==="bloody");if(found>=0){order.drinks[found].qty+=1;state.activeDrink=found}else{order.drinks.push({drink:"Bloody Mary",category:"Mixed Drinks",preset:"bloody",spirit:"Tito’s Handmade Vodka",mixer:"Bloody Mary Mix",pour:1,modifiers:["Ice"],creamer:null,creamQty:0,sugarQty:0,qty:1});state.activeDrink=order.drinks.length-1}order.delivered=false}
-  if(target.dataset.addMixed){const b=state.builder;if(b.spirit&&b.mixer){const order=state.orders[state.seat]||(state.orders[state.seat]={seat:state.seat,drinks:[],delivered:false});const draft={drink:"Custom Mixed Drink",category:"Mixed Drinks",spirit:b.spirit,mixer:b.mixer,pour:b.pour,modifiers:[...b.modifiers],creamer:null,creamQty:0,sugarQty:0,qty:1};draft.drink=mixedName(draft);order.drinks.push(draft);order.delivered=false;state.activeDrink=order.drinks.length-1;state.builder={spirit:null,mixer:null,pour:1,modifiers:["Ice"]}}}
-  if(target.dataset.drink){const order=state.orders[state.seat]||(state.orders[state.seat]={seat:state.seat,drinks:[],delivered:false});const found=order.drinks.findIndex(item=>item.drink===target.dataset.drink);if(found>=0){order.drinks[found].qty+=1;state.activeDrink=found}else{order.drinks.push({drink:target.dataset.drink,category:state.category,modifiers:[],creamer:null,creamQty:0,sugarQty:0,qty:1});state.activeDrink=order.drinks.length-1}order.delivered=false}
+  if(target.dataset.quickMixed){const order=state.orders[state.seat]||(state.orders[state.seat]={seat:state.seat,drinks:[],delivered:false});const found=order.drinks.findIndex(item=>item.preset==="bloody");if(found>=0){order.drinks[found].qty+=1;state.activeDrink=found}else{order.drinks.push({drink:"Bloody Mary",category:"Mixed Drinks",preset:"bloody",spirit:"Tito’s Handmade Vodka",mixer:"Bloody Mary Mix",pour:1,modifiers:["Ice"],creamer:null,creamQty:0,sweetenerType:null,sweetenerQty:0,qty:1});state.activeDrink=order.drinks.length-1}order.delivered=false}
+  if(target.dataset.addMixed){const b=state.builder;if(b.spirit&&b.mixer){const order=state.orders[state.seat]||(state.orders[state.seat]={seat:state.seat,drinks:[],delivered:false});const draft={drink:"Custom Mixed Drink",category:"Mixed Drinks",spirit:b.spirit,mixer:b.mixer,pour:b.pour,modifiers:[...b.modifiers],creamer:null,creamQty:0,sweetenerType:null,sweetenerQty:0,qty:1};draft.drink=mixedName(draft);order.drinks.push(draft);order.delivered=false;state.activeDrink=order.drinks.length-1;state.builder={spirit:null,mixer:null,pour:1,modifiers:["Ice"]}}}
+  if(target.dataset.drink){const order=state.orders[state.seat]||(state.orders[state.seat]={seat:state.seat,drinks:[],delivered:false});const found=order.drinks.findIndex(item=>item.drink===target.dataset.drink);if(found>=0){order.drinks[found].qty+=1;state.activeDrink=found}else{order.drinks.push({drink:target.dataset.drink,category:state.category,modifiers:[],creamer:null,creamQty:0,sweetenerType:null,sweetenerQty:0,qty:1});state.activeDrink=order.drinks.length-1}order.delivered=false}
   if(target.dataset.drinkDelta!==undefined){const order=currentOrder(),index=Number(target.dataset.index);order.drinks[index].qty+=Number(target.dataset.drinkDelta);if(order.drinks[index].qty<=0)order.drinks.splice(index,1);if(!order.drinks.length)delete state.orders[state.seat];state.activeDrink=null}
   if(target.dataset.selectDrink!==undefined)state.activeDrink=Number(target.dataset.selectDrink);
   const drink=currentDrink();
   if(target.dataset.editPour&&drink)drink.pour=Number(target.dataset.editPour);
   if(target.dataset.modifier&&drink){const mod=target.dataset.modifier;drink.modifiers=drink.modifiers.includes(mod)?drink.modifiers.filter(x=>x!==mod):[...drink.modifiers,mod];if(mod==="Ice")drink.modifiers=drink.modifiers.filter(x=>x!=="No Ice");if(mod==="No Ice")drink.modifiers=drink.modifiers.filter(x=>x!=="Ice")}
-  if(target.dataset.creamer&&drink){drink.creamer=target.dataset.creamer;if(!drink.creamQty)drink.creamQty=1}
-  if(target.dataset.quantity&&drink){const key=target.dataset.quantity==="cream"?"creamQty":"sugarQty";drink[key]=Math.max(0,Math.min(9,(drink[key]||0)+Number(target.dataset.delta)));if(key==="creamQty"&&drink[key]&&!drink.creamer)drink.creamer="Dairy";if(key==="creamQty"&&!drink[key])drink.creamer=null}
+  if(target.dataset.addition&&drink){if(target.dataset.addition==="creamer"){drink.creamer=target.dataset.value;if(!drink.creamQty)drink.creamQty=1}else{drink.sweetenerType=target.dataset.value;if(!drink.sweetenerQty)drink.sweetenerQty=1}}
+  if(target.dataset.quantity&&drink){const isCream=target.dataset.quantity==="cream",key=isCream?"creamQty":"sweetenerQty";drink[key]=Math.max(0,Math.min(9,(drink[key]||0)+Number(target.dataset.delta)));if(isCream&&drink[key]&&!drink.creamer)drink.creamer="Dairy";if(isCream&&!drink[key])drink.creamer=null;if(!isCream&&drink[key]&&!drink.sweetenerType)drink.sweetenerType="Sugar";if(!isCream&&!drink[key])drink.sweetenerType=null}
   if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=0;state.category=state.orders[state.seat].drinks[0].category;state.mode="take"}
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
   if(target.dataset.action==="clear"&&confirm("Clear every drink order for this flight?")){state.orders={};state.activeDrink=null;state.mode="take"}
