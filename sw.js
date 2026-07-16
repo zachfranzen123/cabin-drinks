@@ -1,4 +1,4 @@
-const CACHE="cabin-drinks-v3";
+const CACHE="cabin-drinks-v4";
 const SHELL=["./","./index.html","./style.css","./multi-order.css","./app.js","./manifest.json","./app-icon.svg"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)));self.skipWaiting()});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});
