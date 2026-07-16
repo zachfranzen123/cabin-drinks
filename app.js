@@ -36,7 +36,7 @@ const state = {
   orientation: localStorage.getItem("cabin-drinks-orientation") || "front",
   theme: localStorage.getItem("cabin-drinks-theme") || "light",
   seat: "8C", category: "Sodas", mode: "take", orders: saved, activeDrink: null,
-  foodMenu: JSON.parse(localStorage.getItem("cabin-drinks-food-menu") || "[]"), foodSetup:false,
+  foodMenu: JSON.parse(localStorage.getItem("cabin-drinks-food-menu") || "[]"), foodSetup:false, foodDraft:{name:"",qty:1},
   builder: {spirit:null, mixer:null, pour:1, modifiers:["Ice"]}
 };
 if (state.cabin === "first") state.seat = "1A";
@@ -115,7 +115,7 @@ function mixedBuilder() {
 
 function foodPanel(order){
   if(state.foodSetup||!state.foodMenu.length){
-    return `<div class="food-setup"><div class="food-setup-title"><div><strong>First Class food</strong><span>Enter today’s loaded items and quantities</span></div>${state.foodMenu.length?`<button data-action="food-done">Done</button>`:""}</div><div class="food-menu-list">${state.foodMenu.map(item=>`<div><input data-food-name="${item.id}" value="${esc(item.name)}" aria-label="Food name"><span>Loaded</span><button data-food-load="${item.id}" data-delta="-1">−</button><strong>${item.loaded}</strong><button data-food-load="${item.id}" data-delta="1">+</button><button class="food-delete" data-food-delete="${item.id}" aria-label="Delete ${esc(item.name)}">×</button></div>`).join("")}</div><div class="food-add"><input id="newFoodName" placeholder="Food item name"><input id="newFoodQty" type="number" min="1" max="99" value="1" aria-label="Loaded quantity"><button data-action="food-add">Add item</button></div></div>`;
+    return `<div class="food-setup"><div class="food-setup-title"><div><strong>First Class food</strong><span>Enter today’s loaded items and quantities</span></div>${state.foodMenu.length?`<button data-action="food-done">Done</button>`:""}</div><div class="food-menu-list">${state.foodMenu.map(item=>`<div><input data-food-name="${item.id}" value="${esc(item.name)}" aria-label="Food name"><span>Loaded</span><button data-food-load="${item.id}" data-delta="-1" aria-label="Reduce ${esc(item.name)}">−</button><strong>${item.loaded}</strong><button data-food-load="${item.id}" data-delta="1" aria-label="Increase ${esc(item.name)}">+</button><button class="food-delete" data-food-delete="${item.id}" aria-label="Delete ${esc(item.name)}">×</button></div>`).join("")}</div><div class="food-add"><label><span>New food item</span><input id="newFoodName" value="${esc(state.foodDraft.name)}" placeholder="Example: Fruit &amp; cheese"></label><div class="food-draft-qty"><span>Loaded</span><div><button data-new-food-delta="-1" aria-label="Reduce loaded quantity">−</button><strong>${state.foodDraft.qty}</strong><button data-new-food-delta="1" aria-label="Increase loaded quantity">+</button></div></div><button class="food-add-button" data-action="food-add" ${state.foodDraft.name.trim()?"":"disabled"}>Add to menu</button></div>${state.foodMenu.length?`<p class="food-setup-hint">Add another item, or tap Done when today’s menu is ready.</p>`:""}</div>`;
   }
   return `<div class="food-picker"><div class="food-summary"><span>${state.foodMenu.reduce((n,item)=>n+foodRemaining(item),0)} remaining</span><button data-action="food-manage">Edit menu</button></div><div class="food-grid">${state.foodMenu.map(item=>{const remaining=foodRemaining(item);return `<button data-food-add="${item.id}" ${remaining?"":"disabled"}><strong>${esc(item.name)}</strong><span>${remaining?`${remaining} left`:"Sold out"}</span><em>${remaining?"+ Add":""}</em></button>`}).join("")}</div></div>`;
 }
@@ -151,6 +151,7 @@ function deliverView() {
 function empty(){return '<div class="empty"><strong>No orders yet</strong><span>Choose a seat to begin.</span></div>'}
 function render(){app.innerHTML=header()+(state.mode==="take"?takeView():state.mode==="prepare"?prepareView():deliverView())}
 
+app.addEventListener("input",event=>{if(event.target.id==="newFoodName"){state.foodDraft.name=event.target.value;const button=app.querySelector('[data-action="food-add"]');if(button)button.disabled=!state.foodDraft.name.trim()}});
 app.addEventListener("change",event=>{if(event.target.matches('[data-action="plane"]'))state.plane=event.target.value;if(event.target.dataset.foodName){const item=state.foodMenu.find(x=>x.id===event.target.dataset.foodName);if(item&&event.target.value.trim())item.name=event.target.value.trim()}save();render()});
 app.addEventListener("click",event=>{
   const remove=event.target.closest("[data-remove-drink]");
@@ -178,10 +179,11 @@ app.addEventListener("click",event=>{
   if(target.dataset.foodDelta){const item=state.foodMenu.find(x=>x.id===target.dataset.foodDelta),order=currentOrder(),food=order?.foods?.find(x=>x.id===target.dataset.foodDelta),delta=Number(target.dataset.delta);if(food&&(delta<0||(item&&foodRemaining(item)>0))){food.qty+=delta;if(food.qty<=0)order.foods=order.foods.filter(x=>x.id!==food.id);if(!order.drinks.length&&!order.foods.length)delete state.orders[state.seat]}}
   if(target.dataset.foodRemove){const order=currentOrder();if(order){order.foods=(order.foods||[]).filter(x=>x.id!==target.dataset.foodRemove);if(!order.drinks.length&&!order.foods.length)delete state.orders[state.seat]}}
   if(target.dataset.foodLoad){const item=state.foodMenu.find(x=>x.id===target.dataset.foodLoad);if(item)item.loaded=Math.max(foodOrdered(item.id),Math.min(99,item.loaded+Number(target.dataset.delta)))}
+  if(target.dataset.newFoodDelta)state.foodDraft.qty=Math.max(1,Math.min(99,state.foodDraft.qty+Number(target.dataset.newFoodDelta)));
   if(target.dataset.foodDelete&&confirm("Remove this food item from today’s menu?")){state.foodMenu=state.foodMenu.filter(x=>x.id!==target.dataset.foodDelete);Object.values(state.orders).forEach(order=>{order.foods=(order.foods||[]).filter(x=>x.id!==target.dataset.foodDelete);if(!order.drinks.length&&!order.foods.length)delete state.orders[order.seat]})}
   if(target.dataset.action==="food-manage")state.foodSetup=true;
   if(target.dataset.action==="food-done")state.foodSetup=false;
-  if(target.dataset.action==="food-add"){const name=document.querySelector("#newFoodName")?.value.trim(),qty=Math.max(1,Math.min(99,Number(document.querySelector("#newFoodQty")?.value)||1));if(name){state.foodMenu.push({id:`food-${Date.now()}`,name,loaded:qty});state.foodSetup=false}}
+  if(target.dataset.action==="food-add"){const name=state.foodDraft.name.trim(),qty=state.foodDraft.qty;if(name){state.foodMenu.push({id:`food-${Date.now()}`,name,loaded:qty});state.foodDraft={name:"",qty:1};state.foodSetup=true}}
   if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=state.orders[state.seat].drinks.length?0:null;state.category=state.orders[state.seat].foods?.length?"Food":state.orders[state.seat].drinks[0]?.category||"Sodas";state.mode="take"}
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
   if(target.dataset.action==="orientation")state.orientation=state.orientation==="front"?"rear":"front";
