@@ -33,10 +33,13 @@ const state = {
   plane: localStorage.getItem("cabin-drinks-plane") || "737-900",
   cabin: localStorage.getItem("cabin-drinks-cabin") || "premium",
   orientation: localStorage.getItem("cabin-drinks-orientation") || "front",
+  theme: localStorage.getItem("cabin-drinks-theme") || "light",
   seat: "8C", category: "Sodas", mode: "take", orders: saved, activeDrink: null,
   builder: {spirit:null, mixer:null, pour:1, modifiers:["Ice"]}
 };
 if (state.cabin === "first") state.seat = "1A";
+function applyTheme(){document.documentElement.dataset.theme=state.theme;const meta=document.querySelector('meta[name="theme-color"]');if(meta)meta.setAttribute("content",state.theme==="dark"?"#080d0c":"#202423")}
+applyTheme();
 
 const app = document.querySelector("#app");
 const esc = value => String(value).replace(/[&<>'"]/g, char => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"}[char]));
@@ -76,6 +79,7 @@ function save() {
   localStorage.setItem("cabin-drinks-plane", state.plane);
   localStorage.setItem("cabin-drinks-cabin", state.cabin);
   localStorage.setItem("cabin-drinks-orientation", state.orientation);
+  localStorage.setItem("cabin-drinks-theme", state.theme);
   localStorage.setItem("cabin-drinks-orders", JSON.stringify(state.orders));
 }
 function currentOrder() { return state.orders[state.seat]; }
@@ -84,7 +88,7 @@ function ensureSelection() { const order=currentOrder(); state.activeDrink = ord
 
 function header() {
   const count = orderList().filter(order => !order.delivered).reduce((sum, order) => sum + order.drinks.reduce((n, drink) => n + drink.qty, 0), 0);
-  return `<header class="topbar"><div><p class="eyebrow">Offline service pad</p><h1>Cabin Drinks</h1></div><div class="top-actions"><a href="./index.html" class="help-link">Help</a><select data-action="plane" aria-label="Aircraft">${aircraft.map(item => `<option${item===state.plane?" selected":""}>${item}</option>`).join("")}</select></div></header>
+  return `<header class="topbar"><div><p class="eyebrow">Offline service pad</p><h1>Cabin Drinks</h1></div><div class="top-actions"><button data-action="theme" class="theme-button" aria-label="Switch to ${state.theme==="dark"?"light":"dark"} mode">${state.theme==="dark"?"☀️":"🌙"}</button><a href="./index.html" class="help-link">Help</a><select data-action="plane" aria-label="Aircraft">${aircraft.map(item => `<option${item===state.plane?" selected":""}>${item}</option>`).join("")}</select></div></header>
   <nav class="mode-tabs" aria-label="Workflow"><button data-mode="take" class="${state.mode==="take"?"active":""}">Take orders</button><button data-mode="prepare" class="${state.mode==="prepare"?"active":""}">Prepare <span>${count}</span></button><button data-mode="deliver" class="${state.mode==="deliver"?"active":""}">Deliver</button></nav>`;
 }
 
@@ -155,6 +159,7 @@ app.addEventListener("click",event=>{
   if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=0;state.category=state.orders[state.seat].drinks[0].category;state.mode="take"}
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
   if(target.dataset.action==="orientation")state.orientation=state.orientation==="front"?"rear":"front";
+  if(target.dataset.action==="theme"){state.theme=state.theme==="dark"?"light":"dark";applyTheme()}
   if(target.dataset.action==="clear"&&confirm("Clear every drink order for this flight?")){state.orders={};state.activeDrink=null;state.mode="take"}
   save();render();
 });
