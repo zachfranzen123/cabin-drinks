@@ -70,7 +70,7 @@ function ensureSelection() { const order=currentOrder(); state.activeDrink = ord
 
 function header() {
   const count = orderList().filter(order => !order.delivered).reduce((sum, order) => sum + order.drinks.reduce((n, drink) => n + drink.qty, 0), 0);
-  return `<header class="topbar"><div><p class="eyebrow">Offline service pad</p><h1>Cabin Drinks</h1></div><select data-action="plane" aria-label="Aircraft">${aircraft.map(item => `<option${item===state.plane?" selected":""}>${item}</option>`).join("")}</select></header>
+  return `<header class="topbar"><div><p class="eyebrow">Offline service pad</p><h1>Cabin Drinks</h1></div><div class="top-actions"><a href="./index.html" class="help-link">Help</a><select data-action="plane" aria-label="Aircraft">${aircraft.map(item => `<option${item===state.plane?" selected":""}>${item}</option>`).join("")}</select></div></header>
   <nav class="mode-tabs" aria-label="Workflow"><button data-mode="take" class="${state.mode==="take"?"active":""}">Take orders</button><button data-mode="prepare" class="${state.mode==="prepare"?"active":""}">Prepare <span>${count}</span></button><button data-mode="deliver" class="${state.mode==="deliver"?"active":""}">Deliver</button></nav>`;
 }
 

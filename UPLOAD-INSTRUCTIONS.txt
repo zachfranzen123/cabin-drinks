@@ -1,0 +1,26 @@
+Cabin Drinks v6 update
+
+Upload the following files to the root of the GitHub repository. Allow GitHub to replace files with matching names:
+
+- index.html
+- app.html
+- app.js
+- multi-order.css
+- help.css
+- landing.css
+- landing.js
+- manifest.json
+- sw.js
+
+Commit the upload to the main branch. GitHub Pages will republish automatically.
+
+Important: This package includes all v4 and v5 features. You do not need to upload those earlier packages first.
+
+New in v6:
+- Public landing page at drinks.hizach.com
+- App launches at drinks.hizach.com/app.html
+- iPhone, iPad, and Android installation instructions
+- Quick-start usage guide
+- Share button
+- Contact and email-based feedback form
+- Help link inside the app
