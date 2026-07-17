@@ -27,6 +27,7 @@ Object.values(saved).forEach(order => {
     drink.sweetenerQty = drink.sweetenerQty || drink.sugarQty || (drink.modifiers?.includes("Sweetener") ? 1 : 0);
     drink.sweetenerType = drink.sweetenerType || (drink.modifiers?.includes("Sweetener") ? "Sweetener" : drink.sweetenerQty ? "Sugar" : null);
     drink.modifiers = (drink.modifiers || []).filter(item => item !== "Sweetener");
+    if (drink.preset === "irishCoffee") delete drink.preset;
     delete drink.sugarQty;
   });
   delete order.drink; delete order.category; delete order.modifiers;
@@ -69,8 +70,7 @@ const quickMixedRecipes = {
   mimosa:{name:"Mimosa",spirit:"Cuvée 89 Brut Sparkling Wine",mixer:"Orange Juice",pour:1,modifiers:[]},
   ginTonic:{name:"Gin & Tonic",spirit:"Aviation Gin",mixer:"Tonic Water",pour:1,modifiers:["Ice","Lime packet"]},
   vodkaSoda:{name:"Vodka Soda",spirit:"Tito’s Handmade Vodka",mixer:"Polar Original Seltzer",pour:1,modifiers:["Ice","Lime packet"]},
-  rumCoke:{name:"Rum & Coke",spirit:"Bacardí Rum",mixer:"Coca-Cola",pour:1,modifiers:["Ice"]},
-  irishCoffee:{name:"Irish Coffee",spirit:"Five Farms Irish Cream",mixer:"Stumptown Coffee",pour:1,modifiers:[]}
+  rumCoke:{name:"Rum & Coke",spirit:"Bacardí Rum",mixer:"Coca-Cola",pour:1,modifiers:["Ice"]}
 };
 const spiritType = spirit => spirit.includes("Gin") ? "Gin" : spirit.includes("Vodka") ? "Vodka" : spirit.includes("Rum") ? "Rum" : spirit.includes("Tequila") ? "Tequila" : spirit.includes("Bourbon") ? "Bourbon" : spirit.includes("Scotch") ? "Scotch" : spirit.includes("Irish Cream") ? "Irish Cream" : "Whiskey";
 const mixedName = drink => quickMixedRecipes[drink.preset]?.name || `${spiritType(drink.spirit)} & ${label(drink.mixer).replace(" Water","").replace("Polar Original ","")}`;
@@ -81,8 +81,10 @@ const drinkTitle = drink => {
 };
 const isCoffeeTea = drink => drink.category === "Coffee & Teas" || (drink.category === "Mixed Drinks" && drink.mixer?.includes("Coffee"));
 const isCoffee = drink => isCoffeeTea(drink) && ((drink.drink||"").includes("Coffee") || (drink.drink||"").includes("Cold Brew") || (drink.mixer||"").includes("Coffee"));
+const isCoffeeLiqueur = drink => drink.category === "Alcohol" && ["Crater Lake Hazelnut Espresso Vodka","Five Farms Irish Cream"].includes(drink.drink);
 const modifiersFor = drink => isCoffeeTea(drink)
-  ? (drink.drink.includes("Cold Brew") ? ["Ice","No Ice"] : isCoffee(drink) ? [] : ["Lemon packet"])
+  ? ((drink.drink||"").includes("Cold Brew") ? ["Ice","No Ice","Irish cream","Hazelnut espresso vodka"] : isCoffee(drink) ? ["Irish cream","Hazelnut espresso vodka"] : ["Lemon packet"])
+  : isCoffeeLiqueur(drink) ? ["Coffee","Decaf coffee","Ice","No Ice"]
   : ["Ice","No Ice","Lemon packet","Lime packet","Grapefruit packet"];
 const details = drink => {
   const parts = drink.category === "Mixed Drinks" ? [`${label(drink.spirit)}${drink.pour===2?" ×2":""}`, label(drink.mixer), ...drink.modifiers] : [...drink.modifiers];
@@ -188,7 +190,7 @@ app.addEventListener("click",event=>{
   if(target.dataset.selectDrink!==undefined)state.activeDrink=Number(target.dataset.selectDrink);
   const drink=currentDrink();
   if(target.dataset.editPour&&drink)drink.pour=Number(target.dataset.editPour);
-  if(target.dataset.modifier!==undefined&&drink){const mod=target.dataset.modifier,current=new Set(drink.modifiers||[]);if(current.has(mod))current.delete(mod);else current.add(mod);if(mod==="Ice")current.delete("No Ice");if(mod==="No Ice")current.delete("Ice");drink.modifiers=[...current];const order=currentOrder();if(order)order.delivered=false;save();render();return}
+  if(target.dataset.modifier!==undefined&&drink){const mod=target.dataset.modifier,current=new Set(drink.modifiers||[]);if(current.has(mod))current.delete(mod);else current.add(mod);if(mod==="Ice")current.delete("No Ice");if(mod==="No Ice")current.delete("Ice");if(mod==="Coffee")current.delete("Decaf coffee");if(mod==="Decaf coffee")current.delete("Coffee");drink.modifiers=[...current];const order=currentOrder();if(order)order.delivered=false;save();render();return}
   if(target.dataset.addition&&drink){if(target.dataset.addition==="creamer"){drink.creamer=target.dataset.value;if(!drink.creamQty)drink.creamQty=1}else{drink.sweetenerType=target.dataset.value;if(!drink.sweetenerQty)drink.sweetenerQty=1}}
   if(target.dataset.quantity&&drink){const isCream=target.dataset.quantity==="cream",key=isCream?"creamQty":"sweetenerQty";drink[key]=Math.max(0,Math.min(9,(drink[key]||0)+Number(target.dataset.delta)));if(isCream&&drink[key]&&!drink.creamer)drink.creamer="Dairy";if(isCream&&!drink[key])drink.creamer=null;if(!isCream&&drink[key]&&!drink.sweetenerType)drink.sweetenerType="Sugar";if(!isCream&&!drink[key])drink.sweetenerType=null}
   if(target.dataset.foodAdd){const item=state.foodMenu.find(x=>x.id===target.dataset.foodAdd);if(item&&foodRemaining(item)>0){const order=state.orders[state.seat]||(state.orders[state.seat]={seat:state.seat,drinks:[],foods:[],delivered:false});order.foods=order.foods||[];const found=order.foods.find(food=>food.id===item.id);if(found)found.qty++;else order.foods.push({id:item.id,qty:1});order.delivered=false}}
