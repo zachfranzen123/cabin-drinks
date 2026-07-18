@@ -9,6 +9,7 @@ const menu = {
   "Coffee & Teas": ["Stumptown Coffee", "Stumptown Decaf Coffee", "Stash English Breakfast Tea", "Stash Peppermint Tea", "Stash Jasmine Blossom Green Tea", "Stumptown Cold Brew Copilot"],
   "Juice & Water": ["Boxed Water", "Apple Juice", "Cranberry Juice", "Orange Juice", "Passion Orange Guava Juice"]
 };
+const serviceCategories = ["Juice & Water", "Coffee & Teas", "Mixed Drinks", "Sodas", "Alcohol", "Mixers"];
 const shortNames = {
   "Broken Earth Red Blend":"Red Wine", "Waterbrook White Blend":"White Wine", "Cuvée 89 Brut Sparkling Wine":"Sparkling Wine",
   "Tito’s Handmade Vodka":"Vodka", "Buffalo Trace Bourbon":"Bourbon", "Jack Daniel’s Whiskey":"Whiskey", "Glenfarclas Scotch":"Scotch",
@@ -37,7 +38,7 @@ const state = {
   cabin: localStorage.getItem("cabin-drinks-cabin") || "premium",
   orientation: localStorage.getItem("cabin-drinks-orientation") || "front",
   theme: localStorage.getItem("cabin-drinks-theme") || "light",
-  seat: "8C", category: "Sodas", mode: "take", orders: saved, activeDrink: null,
+  seat: "8C", category: "Juice & Water", mode: "take", orders: saved, activeDrink: null,
   foodMenu: JSON.parse(localStorage.getItem("cabin-drinks-food-menu") || "[]"), foodSetup:false, foodDraft:{name:"",qty:1},
   builder: {spirit:null, mixer:null, pour:1, modifiers:["Ice"]}
 };
@@ -152,7 +153,7 @@ function takeView() {
   const visualLetters=seatLetters(), split=state.cabin==="first"?2:3;
   const head=`<div class="seat-head"><span></span>${visualLetters.slice(0,split).map(letter=>`<b>${letter}</b>`).join("")}<i></i>${visualLetters.slice(split).map(letter=>`<b>${letter}</b>`).join("")}</div>`;
   const cabinControls=`<div class="cabin-tabs"><button data-cabin="first" class="${state.cabin==="first"?"active":""}">First Class</button><button data-cabin="premium" class="${state.cabin==="premium"?"active":""}">Premium</button><button data-action="orientation" class="orientation-button" aria-label="Reverse seat map; currently ${state.orientation==="front"?"front to back":"back to front"}"><span class="plane ${state.orientation}">✈️</span><small>${state.orientation==="front"?"Front first":"Rear first"}</small></button></div>`;
-  const categories=state.cabin==="first"?["Food",...Object.keys(menu)]:Object.keys(menu);
+  const categories=state.cabin==="first"?["Food",...serviceCategories]:serviceCategories;
   const seatItems=seatTotal+(order?.foods||[]).reduce((n,food)=>n+food.qty,0);
   return `<div class="service-tools"><span>${itemCount()?`${itemCount()} active item${itemCount()===1?"":"s"}`:"No active orders"}</span><button data-action="clear" ${itemCount()?"":"disabled"}>Clear orders</button></div>${cabinControls}<section class="seat-map ${state.cabin==="first"?"first-map":""}" aria-label="${state.cabin==="first"?"First":"Premium"} Class seat map">${head}${map}</section><section class="order-panel"><div class="selected-line"><div><span>Selected seat</span><strong>${state.seat}</strong></div></div>${selectedFoods}${selectedDrinks}<div class="category-tabs">${categories.map(cat=>`<button data-category="${cat}" class="${state.category===cat?"active":""}">${cat}</button>`).join("")}</div>${drinkChooser}${modifierEditor}</section><footer class="order-tray"><div><span>${seatItems?`${state.seat} · ${seatItems} item${seatItems===1?"":"s"}`:`${state.seat} · Add food or drink`}</span><small>Food inventory updates automatically</small></div><button data-mode="prepare" ${itemCount()?"":"disabled"}>Prepare · ${itemCount()}</button></footer>`;
 }
@@ -176,7 +177,7 @@ app.addEventListener("click",event=>{
   if(remove){const order=currentOrder();order.drinks.splice(Number(remove.dataset.removeDrink),1);if(!order.drinks.length&&!(order.foods||[]).length)delete state.orders[state.seat];state.activeDrink=null;save();render();return}
   const target=event.target.closest("button");if(!target)return;
   if(target.dataset.mode)state.mode=target.dataset.mode;
-  if(target.dataset.cabin){state.cabin=target.dataset.cabin;state.seat=state.cabin==="first"?"1A":"6A";state.activeDrink=null;if(state.cabin!=="first"&&state.category==="Food")state.category="Sodas"}
+  if(target.dataset.cabin){state.cabin=target.dataset.cabin;state.seat=state.cabin==="first"?"1A":"6A";state.activeDrink=null;if(state.cabin!=="first"&&state.category==="Food")state.category="Juice & Water"}
   if(target.dataset.seat){state.seat=target.dataset.seat;state.activeDrink=null}
   if(target.dataset.category)state.category=target.dataset.category;
   if(target.dataset.buildSpirit){state.builder.spirit=target.dataset.buildSpirit;if(state.builder.spirit.includes("Sparkling Wine"))state.builder.pour=1}
@@ -202,7 +203,7 @@ app.addEventListener("click",event=>{
   if(target.dataset.action==="food-manage")state.foodSetup=true;
   if(target.dataset.action==="food-done")state.foodSetup=false;
   if(target.dataset.action==="food-add"){const name=state.foodDraft.name.trim(),qty=state.foodDraft.qty;if(name){state.foodMenu.push({id:`food-${Date.now()}`,name,loaded:qty});state.foodDraft={name:"",qty:1};state.foodSetup=true}}
-  if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=state.orders[state.seat].drinks.length?0:null;state.category=state.orders[state.seat].foods?.length?"Food":state.orders[state.seat].drinks[0]?.category||"Sodas";state.mode="take"}
+  if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=state.orders[state.seat].drinks.length?0:null;state.category=state.orders[state.seat].foods?.length?"Food":state.orders[state.seat].drinks[0]?.category||"Juice & Water";state.mode="take"}
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
   if(target.dataset.action==="orientation")state.orientation=state.orientation==="front"?"rear":"front";
   if(target.dataset.action==="theme"){state.theme=state.theme==="dark"?"light":"dark";applyTheme()}
