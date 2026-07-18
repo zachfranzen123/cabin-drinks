@@ -1,0 +1,137 @@
+.real-service {
+  padding: clamp(4.5rem, 9vw, 7.5rem) max(5vw, calc((100vw - 1120px) / 2));
+  display: grid;
+  grid-template-columns: minmax(0, .9fr) minmax(460px, 1.1fr);
+  gap: clamp(3rem, 7vw, 7rem);
+  align-items: center;
+  overflow: hidden;
+  background: #dff2ee;
+}
+
+.real-service h2 {
+  max-width: 650px;
+  margin: .15rem 0 1rem;
+  font-size: clamp(2.6rem, 5.6vw, 5rem);
+  line-height: .98;
+  letter-spacing: -.055em;
+}
+
+.real-service .service-intro {
+  max-width: 610px;
+  margin: 0;
+  color: #4e5b57;
+  font-size: 1.06rem;
+  line-height: 1.65;
+}
+
+.latest-features {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: .65rem;
+  margin-top: 1.7rem;
+}
+
+.latest-features article {
+  padding: 1rem;
+  border: 1px solid #a8cbc5;
+  border-radius: 14px;
+  background: #f8fffd;
+}
+
+.latest-features strong,
+.latest-features span {
+  display: block;
+}
+
+.latest-features strong {
+  font-size: .91rem;
+}
+
+.latest-features span {
+  margin-top: .3rem;
+  color: #52736d;
+  font-size: .76rem;
+  line-height: 1.4;
+}
+
+.device-showcase {
+  min-height: 650px;
+  position: relative;
+}
+
+.screenshot-phone {
+  position: absolute;
+  margin: 0;
+  width: min(56%, 300px);
+  height: 610px;
+  overflow: hidden;
+  border: 9px solid #202423;
+  border-radius: 42px;
+  background: #202423;
+  box-shadow: 0 28px 65px #17332f45;
+}
+
+.screenshot-phone img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.screenshot-phone:first-child {
+  left: 0;
+  top: 0;
+  transform: rotate(-4deg);
+}
+
+.screenshot-phone:last-child {
+  right: 0;
+  bottom: 0;
+  transform: rotate(4deg);
+}
+
+.screenshot-phone figcaption {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 12px;
+  padding: .65rem .8rem;
+  border-radius: 12px;
+  color: #fff;
+  background: #202423e8;
+  font-size: .74rem;
+  font-weight: 800;
+  text-align: center;
+  backdrop-filter: blur(8px);
+}
+
+@media (max-width: 900px) {
+  .real-service {
+    grid-template-columns: 1fr;
+  }
+
+  .device-showcase {
+    width: min(100%, 620px);
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 560px) {
+  .real-service {
+    padding-inline: 20px;
+  }
+
+  .latest-features {
+    grid-template-columns: 1fr;
+  }
+
+  .device-showcase {
+    min-height: 540px;
+  }
+
+  .screenshot-phone {
+    width: 58%;
+    height: 505px;
+    border-width: 7px;
+    border-radius: 32px;
+  }
+}
