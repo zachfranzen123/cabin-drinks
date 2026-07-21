@@ -1,3 +1,4 @@
+const APP_VERSION = "13";
 const aircraft = ["737-700", "737-800", "737 MAX 8", "737-900", "737 MAX 9"];
 const premiumSeatLetters = ["A", "B", "C", "D", "E", "F"];
 const firstSeatLetters = ["A", "C", "D", "F"];
@@ -108,7 +109,7 @@ function ensureSelection() { const order=currentOrder(); state.activeDrink = ord
 
 function header() {
   const count = orderList().filter(order => !order.delivered).reduce((sum, order) => sum + order.drinks.reduce((n, drink) => n + drink.qty, 0) + (order.foods||[]).reduce((n,food)=>n+food.qty,0), 0);
-  return `<header class="topbar"><div><p class="eyebrow">Offline service pad</p><h1>Cabin Drinks</h1></div><div class="top-actions"><button data-action="theme" class="theme-button" aria-label="Switch to ${state.theme==="dark"?"light":"dark"} mode">${state.theme==="dark"?"☀️":"🌙"}</button><a href="./index.html" class="help-link">Help</a><select data-action="plane" aria-label="Aircraft">${aircraft.map(item => `<option${item===state.plane?" selected":""}>${item}</option>`).join("")}</select></div></header>
+  return `<header class="topbar"><div><p class="eyebrow">Offline service pad <span class="app-version">v${APP_VERSION}</span></p><h1>Cabin Drinks</h1></div><div class="top-actions"><button data-action="theme" class="theme-button" aria-label="Switch to ${state.theme==="dark"?"light":"dark"} mode">${state.theme==="dark"?"☀️":"🌙"}</button><a href="./index.html" class="help-link">Help</a><select data-action="plane" aria-label="Aircraft">${aircraft.map(item => `<option${item===state.plane?" selected":""}>${item}</option>`).join("")}</select></div></header>
   <nav class="mode-tabs" aria-label="Workflow"><button data-mode="take" class="${state.mode==="take"?"active":""}">Take orders</button><button data-mode="prepare" class="${state.mode==="prepare"?"active":""}">Prepare <span>${count}</span></button><button data-mode="deliver" class="${state.mode==="deliver"?"active":""}">Deliver</button></nav>`;
 }
 
@@ -155,7 +156,7 @@ function takeView() {
   const cabinControls=`<div class="cabin-tabs"><button data-cabin="first" class="${state.cabin==="first"?"active":""}">First Class</button><button data-cabin="premium" class="${state.cabin==="premium"?"active":""}">Premium</button><button data-action="orientation" class="orientation-button" aria-label="Reverse seat map; currently ${state.orientation==="front"?"front to back":"back to front"}"><span class="plane ${state.orientation}">✈️</span><small>${state.orientation==="front"?"Front first":"Rear first"}</small></button></div>`;
   const categories=state.cabin==="first"?["Food",...serviceCategories]:serviceCategories;
   const seatItems=seatTotal+(order?.foods||[]).reduce((n,food)=>n+food.qty,0);
-  return `<div class="service-tools"><span>${itemCount()?`${itemCount()} active item${itemCount()===1?"":"s"}`:"No active orders"}</span><button data-action="clear" ${itemCount()?"":"disabled"}>Clear orders</button></div>${cabinControls}<section class="seat-map ${state.cabin==="first"?"first-map":""}" aria-label="${state.cabin==="first"?"First":"Premium"} Class seat map">${head}${map}</section><section class="order-panel"><div class="selected-line"><div><span>Selected seat</span><strong>${state.seat}</strong></div></div>${selectedFoods}${selectedDrinks}<div class="category-tabs">${categories.map(cat=>`<button data-category="${cat}" class="${state.category===cat?"active":""}">${cat}</button>`).join("")}</div>${drinkChooser}${modifierEditor}</section><footer class="order-tray"><div><span>${seatItems?`${state.seat} · ${seatItems} item${seatItems===1?"":"s"}`:`${state.seat} · Add food or drink`}</span><small>Food inventory updates automatically</small></div><button data-mode="prepare" ${itemCount()?"":"disabled"}>Prepare · ${itemCount()}</button></footer>`;
+  return `<div class="service-tools"><span>${itemCount()?`${itemCount()} active item${itemCount()===1?"":"s"}`:"No active orders"}</span><div class="clear-actions"><button data-action="clear-orders" ${itemCount()?"":"disabled"}>Clear orders</button><button data-action="clear-all" ${itemCount()||state.foodMenu.length?"":"disabled"}>Clear all</button></div></div>${cabinControls}<section class="seat-map ${state.cabin==="first"?"first-map":""}" aria-label="${state.cabin==="first"?"First":"Premium"} Class seat map">${head}${map}</section><section class="order-panel"><div class="selected-line"><div><span>Selected seat</span><strong>${state.seat}</strong></div></div>${selectedFoods}${selectedDrinks}<div class="category-tabs">${categories.map(cat=>`<button data-category="${cat}" class="${state.category===cat?"active":""}">${cat}</button>`).join("")}</div>${drinkChooser}${modifierEditor}</section><footer class="order-tray"><div><span>${seatItems?`${state.seat} · ${seatItems} item${seatItems===1?"":"s"}`:`${state.seat} · Add food or drink`}</span><small>Food inventory updates automatically</small></div><button data-mode="prepare" ${itemCount()?"":"disabled"}>Prepare · ${itemCount()}</button></footer>`;
 }
 
 function prepareView() {
@@ -207,7 +208,8 @@ app.addEventListener("click",event=>{
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
   if(target.dataset.action==="orientation")state.orientation=state.orientation==="front"?"rear":"front";
   if(target.dataset.action==="theme"){state.theme=state.theme==="dark"?"light":"dark";applyTheme()}
-  if(target.dataset.action==="clear"&&confirm("Clear every food and drink order for this flight? Food reservations will return to inventory.")){state.orders={};state.activeDrink=null;state.mode="take"}
+  if(target.dataset.action==="clear-orders"&&confirm("Clear every food and drink order? Your loaded First Class food menu will stay available.")){state.orders={};state.activeDrink=null;state.mode="take"}
+  if(target.dataset.action==="clear-all"&&confirm("Clear all orders and remove today’s First Class food menu? This starts a completely fresh flight.")){state.orders={};state.foodMenu=[];state.foodDraft={name:"",qty:1};state.foodSetup=false;state.activeDrink=null;state.mode="take"}
   save();render();
 });
 render();

@@ -1,0 +1,108 @@
+.app-version {
+  display: inline-block;
+  margin-left: 5px;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 9px;
+  letter-spacing: .04em;
+  vertical-align: 1px;
+}
+
+.clear-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.clear-actions button {
+  min-height: 38px;
+  padding: 0 10px;
+  border: 1px solid #d8a49f;
+  border-radius: 10px;
+  color: #984d47;
+  background: #fff1ee;
+  font-size: 11px;
+  font-weight: 800;
+  touch-action: manipulation;
+}
+
+.clear-actions button[data-action="clear-all"] {
+  color: #fff;
+  border-color: #a34d45;
+  background: #a34d45;
+}
+
+.clear-actions button:disabled {
+  opacity: .35;
+}
+
+.food-setup,
+.food-picker {
+  min-width: 0;
+  overflow: hidden;
+}
+
+.food-menu-list input,
+.food-add input {
+  width: 100%;
+  min-width: 0;
+  height: 44px;
+  font-size: 16px;
+}
+
+.food-menu-list button,
+.food-draft-qty button {
+  min-width: 40px;
+  min-height: 40px;
+  touch-action: manipulation;
+  -webkit-user-select: none;
+  user-select: none;
+}
+
+.food-draft-qty > div {
+  height: 48px;
+  grid-template-columns: 48px 1fr 48px;
+}
+
+.food-draft-qty button {
+  height: 44px;
+  font-size: 22px;
+}
+
+html[data-theme="dark"] .clear-actions button {
+  color: #d78c84;
+  border-color: #714a46;
+  background: #241a19;
+}
+
+html[data-theme="dark"] .clear-actions button[data-action="clear-all"] {
+  color: #fff;
+  background: #8e4039;
+}
+
+@media (max-width: 430px) {
+  .service-tools {
+    align-items: flex-start;
+  }
+
+  .clear-actions {
+    flex-direction: column;
+  }
+
+  .clear-actions button {
+    min-height: 34px;
+  }
+
+  .food-add {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .food-draft-qty {
+    width: 100%;
+  }
+
+  .food-add-button {
+    grid-column: 1 / -1;
+    min-height: 46px;
+  }
+}
