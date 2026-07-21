@@ -1,4 +1,4 @@
-const CACHE="cabin-drinks-v35";
+const CACHE="cabin-drinks-v36";
 const SHELL=["./","./index.html","./app.html","./landing.css","./history.css","./about.css","./support.css","./showcase.css","./hero-mockup.css","./landing.js","./style.css","./multi-order.css","./help.css","./v7.css","./v8.css","./delivery-details.css","./v10.css","./food.css","./usability.css","./v13.css","./app.js","./manifest.json","./app-icon.svg","./app-seat-map.png","./app-prepare-orders.png"];
 self.addEventListener("install",event=>{event.waitUntil(caches.open(CACHE).then(cache=>Promise.all(SHELL.map(file=>cache.add(file)))));self.skipWaiting()});
 self.addEventListener("activate",event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim()});

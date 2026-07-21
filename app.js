@@ -208,7 +208,7 @@ app.addEventListener("click",event=>{
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
   if(target.dataset.action==="orientation")state.orientation=state.orientation==="front"?"rear":"front";
   if(target.dataset.action==="theme"){state.theme=state.theme==="dark"?"light":"dark";applyTheme()}
-  if(target.dataset.action==="clear-orders"&&confirm("Clear every food and drink order? Your loaded First Class food menu will stay available.")){state.orders={};state.activeDrink=null;state.mode="take"}
+  if(target.dataset.action==="clear-orders"&&confirm("Clear all seat selections? This removes every food and drink assigned to a seat, but keeps today’s food menu and loaded quantities.")){state.orders={};state.activeDrink=null;state.mode="take"}
   if(target.dataset.action==="clear-all"&&confirm("Clear all orders and remove today’s First Class food menu? This starts a completely fresh flight.")){state.orders={};state.foodMenu=[];state.foodDraft={name:"",qty:1};state.foodSetup=false;state.activeDrink=null;state.mode="take"}
   save();render();
 });
