@@ -1,26 +1,479 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#202423"><title>Cabin Drinks · Offline food and beverage service pad</title><meta name="description" content="A fast, offline-friendly food and beverage order pad designed for inflight service."><script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").then(()=>navigator.serviceWorker.ready).catch(()=>{})}</script><link rel="manifest" href="./manifest.json"><link rel="icon" href="./app-icon.svg"><link rel="apple-touch-icon" href="./app-icon.svg"><link rel="stylesheet" href="./landing.css"><link rel="stylesheet" href="./history.css"><link rel="stylesheet" href="./about.css"><link rel="stylesheet" href="./support.css"><link rel="stylesheet" href="./showcase.css"><link rel="stylesheet" href="./hero-mockup.css"><link rel="stylesheet" href="./github-feedback.css"></head><body>
-<header class="nav"><a class="brand" href="./"><img src="./app-icon.svg" alt=""><span>Cabin Drinks</span></a><div class="nav-actions"><a class="history-link" href="#versions">Version history</a><button id="shareButton" class="text-button">Share</button></div></header><main>
-<section class="hero"><div class="hero-copy"><p class="eyebrow">Built for inflight service</p><span class="current-version">Version 12 · Current</span><h1>Take food &amp; drink orders.<br>Skip the scribbled notes.</h1><p class="intro">Tap a seat, add beverages and First Class food choices, prepare everything in the galley, and check complete orders off during delivery. After installation, it works without an internet connection.</p><div class="actions"><a class="primary" href="./app.html">Open Cabin Drinks</a><a class="secondary" href="#install">Install guide</a></div><p class="privacy">No account. No passenger names. Orders stay on your device.</p></div><div class="phone realistic-phone" aria-label="Cabin Drinks First Class seat map preview"><div class="phone-top"><small>FIRST CLASS</small><strong>Cabin Drinks</strong></div><div class="mock-cabin-tabs"><span class="active">First Class</span><span>Premium</span></div><div class="realistic-map"><span></span><span class="seat-letter">A</span><span class="seat-letter">C</span><b class="aisle"></b><span class="seat-letter">D</span><span class="seat-letter">F</span><span class="row-number">1</span><i>A</i><i>C</i><b class="aisle"></b><i>D</i><i>F</i><span class="row-number">2</span><i>A</i><i class="selected">2C</i><b class="aisle"></b><i>D</i><i class="ordered">F</i><span class="row-number">3</span><i>A</i><i>C</i><b class="aisle"></b><i>D</i><i>F</i><span class="row-number">4</span><i>A</i><i>C</i><b class="aisle"></b><i>D</i><i>F</i></div><div class="mini-order"><small>2C · food &amp; drink</small><strong>Fruit &amp; Cheese Plate</strong><span>Stumptown Coffee · Irish cream · Oat milk</span></div></div></section>
-<section class="features"><article><span>01</span><h2>Take</h2><p>Choose First Class or Premium, tap a seat, then add drinks and First Class food choices.</p></article><article><span>02</span><h2>Prepare</h2><p>See food tallies and complete galley instructions grouped by seat, including quantities and modifiers.</p></article><article><span>03</span><h2>Deliver</h2><p>Return to the cabin and confirm each seat’s complete food-and-beverage order as it is delivered.</p></article></section>
-<section class="real-service"><div><p class="eyebrow">Improved by crew feedback</p><h2>Built around how service actually happens.</h2><p class="service-intro">Recent requests from working crew have made Cabin Drinks quicker to navigate, clearer in the galley, and more dependable when the cabin goes offline.</p><div class="latest-features"><article><strong>Water &amp; coffee first</strong><span>Most-requested categories are now immediately available.</span></article><article><strong>Larger category grid</strong><span>Big controls replace the horizontally scrolling category strip.</span></article><article><strong>First Class food tally</strong><span>Load today’s choices, assign seats, and watch inventory update.</span></article><article><strong>Complete modifiers</strong><span>Creamers, sweeteners, ice, citrus, doubles, and coffee additions stay with the order.</span></article><article><strong>Faster mixed drinks</strong><span>Common recipes, custom builds, and their editors stay together.</span></article><article><strong>Airplane-mode ready</strong><span>A strengthened offline launch keeps the installed app available inflight.</span></article></div></div><div class="device-showcase" aria-label="Cabin Drinks being used during inflight service"><figure class="screenshot-phone"><img src="./app-seat-map.png" alt="Cabin Drinks Premium seat map with active beverage orders" loading="lazy"><figcaption>Take orders by seat</figcaption></figure><figure class="screenshot-phone"><img src="./app-prepare-orders.png" alt="Cabin Drinks galley preparation list with seats and drink modifiers" loading="lazy"><figcaption>Prepare everything in the galley</figcaption></figure></div></section>
-<section id="install" class="install"><div><p class="eyebrow">Install on your phone</p><h2>Use it like an app</h2><p>Load the tool once while online. Your seat maps, beverage menu, First Class food inventory, and current orders are then available offline.</p></div><div class="device-grid"><article><h3>iPhone or iPad</h3><ol><li>Open this page in <strong>Safari</strong>.</li><li>Tap <strong>Open Cabin Drinks</strong>.</li><li>Tap Safari’s <strong>Share</strong> button.</li><li>Choose <strong>Add to Home Screen</strong>, then <strong>Add</strong>.</li></ol></article><article><h3>Android</h3><ol><li>Open this page in <strong>Chrome</strong>.</li><li>Tap <strong>Open Cabin Drinks</strong>.</li><li>Open Chrome’s menu.</li><li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li></ol></article></div><a class="primary centered" href="./app.html">Open Cabin Drinks</a></section>
-<section class="guide"><p class="eyebrow">Quick start</p><h2>From seat map to service</h2><div class="guide-grid"><article><strong>1</strong><p>Select the aircraft and cabin. In First Class, set up today’s food inventory.</p></article><article><strong>2</strong><p>Tap a seat and add each requested food item and drink.</p></article><article><strong>3</strong><p>Use Common Drinks or Build Your Own for mixed combinations.</p></article><article><strong>4</strong><p>Open Prepare for galley totals, then Deliver when you return to the cabin.</p></article></div></section>
-<section class="meet-zach"><div class="about-card"><div class="zach-mark" aria-hidden="true">ZF</div><div class="about-copy"><p class="eyebrow">Behind the app</p><h2>Hi, I’m Zach.</h2><p>I built Cabin Drinks as a small independent project to make inflight service a little easier for our crew community. When I’m not tinkering with the app, you’ll often find me behind a camera.</p><div class="zach-links"><a href="https://www.instagram.com/dayabay/" target="_blank" rel="noopener noreferrer"><span>Follow along</span><strong>@dayabay</strong><i aria-hidden="true">↗</i></a><a href="https://www.hizach.com/" target="_blank" rel="noopener noreferrer"><span>Photography</span><strong>hizach.com</strong><i aria-hidden="true">↗</i></a></div></div></div></section>
-<section id="versions" class="versions"><div class="versions-heading"><div><p class="eyebrow">Built one flight at a time</p><h2>Version History</h2></div><p>See how Cabin Drinks grew from a simple seat-and-drink pad into a complete offline service companion.</p></div><div class="release-list">
-<details class="release" open><summary><span><b>Version 13</b><strong>Fresh Flight Reset</strong></span><em>Current</em></summary><div><p>A clearer reset and a smoother First Class food setup on iPhone.</p><ul><li>New Clear All option removes orders, reservations, and the loaded food menu</li><li>Clear Orders remains available when the same food menu should be reused</li><li>Visible version badge inside the app</li><li>Food inputs no longer trigger unwanted iPhone zoom</li><li>Larger, more responsive meal quantity controls</li></ul></div></details>
-<details class="release" open><summary><span><b>Version 12</b><strong>Faster Service</strong></span><em>Current</em></summary><div><p>Less hunting, less horizontal scrolling, and stronger offline reliability.</p><ul><li>Juice &amp; Water and Coffee &amp; Teas moved to the front</li><li>Larger, scroll-free category grid</li><li>Coffee additions for Irish cream and hazelnut espresso vodka</li><li>Improved iPhone food-quantity controls and Home Screen offline launch</li><li>Common mixed-drink editors moved directly beneath their recipes</li></ul></div></details>
-<details class="release"><summary><span><b>Version 11</b><strong>First Class Food</strong></span><em>July 2026</em></summary><div><p>Replace the paper meal tally with a live, flight-specific inventory.</p><ul><li>Custom food menu and loaded quantities for First Class</li><li>Reserve food by seat with automatic remaining counts</li><li>Sold-out protection plus food tallies in Prepare and Deliver</li></ul></div></details>
-<details class="release"><summary><span><b>Version 10</b><strong>Redeye Ready</strong></span><em>July 2026</em></summary><div><p>A calmer, clearer experience for overnight service.</p><ul><li>Dark mode with a remembered sun/moon setting</li><li>Drink orders and modifiers are more prominent in Delivery</li><li>“Tap when delivered” guidance is intentionally quieter</li></ul></div></details>
-<details class="release"><summary><span><b>Version 9</b><strong>Correct Cabin View</strong></span><em>July 2026</em></summary><div><p>The reversed map now matches what crew actually see while walking the aisle.</p><ul><li>Forward view remains ABC · DEF</li><li>Reverse view displays FED · CBA</li><li>First Class reverse view displays FD · CA</li></ul></div></details>
-<details class="release"><summary><span><b>Version 8</b><strong>Delivery Confidence</strong></span><em>July 2026</em></summary><div><ul><li>Airplane control reverses the row sequence</li><li>Delivery cards show creams, sugars, and every modifier</li><li>More complete handoff details before marking a seat delivered</li></ul></div></details>
-<details class="release"><summary><span><b>Version 7</b><strong>Coffee &amp; Tea Polish</strong></span><em>July 2026</em></summary><div><ul><li>Cleaner Jasmine Green Tea label and coffee-specific modifiers</li><li>Dairy or oat milk with quantities</li><li>Sugar or sweetener with quantities</li><li>Clear Orders moved to the top of the main screen</li></ul></div></details>
-<details class="release"><summary><span><b>Version 6</b><strong>Ready to Share</strong></span><em>July 2026</em></summary><div><ul><li>New public landing page and installation guide</li><li>Quick-start instructions and help</li><li>Share, email contact, and feedback options</li></ul></div></details>
-<details class="release"><summary><span><b>Version 5</b><strong>Mixed Drinks</strong></span><em>July 2026</em></summary><div><ul><li>Build Your Own mixed-drink workflow</li><li>Bloody Mary quick build</li><li>Lemon, lime, and grapefruit citrus packets</li></ul></div></details>
-<details class="release"><summary><span><b>Version 4</b><strong>First Class</strong></span><em>July 2026</em></summary><div><ul><li>First Class and Premium cabin switcher</li><li>Rows 1–4 with AC · DF seating</li><li>Repeated taps add quantities, including double spirits</li></ul></div></details>
-<details class="release"><summary><span><b>Version 3</b><strong>Multiple Drinks</strong></span><em>July 2026</em></summary><div><ul><li>More than one drink per seat</li><li>Dairy and oat milk choices</li><li>Cream and sugar quantities</li><li>Existing saved orders migrated to the new format</li></ul></div></details>
-<details class="release"><summary><span><b>Version 2</b><strong>Public &amp; Offline</strong></span><em>July 2026</em></summary><div><ul><li>Installable offline web app at drinks.hizach.com</li><li>Aircraft selection and premium exit-row layouts</li><li>Branded onboard beverage menu</li></ul></div></details>
-<details class="release"><summary><span><b>Version 1</b><strong>First Prototype</strong></span><em>July 2026</em></summary><div><ul><li>Tap a seat, then choose a drink</li><li>Prepare and Deliver views</li><li>Orders stored locally on the device</li></ul></div></details>
-</div></section>
-<a class="tip-badge" href="https://donate.stripe.com/4gM00k2Pk49k4T7e986wE00" target="_blank" rel="noopener noreferrer" aria-label="Buy me a coffee to support Cabin Drinks"><span aria-hidden="true">☕</span><strong>Buy Me a Coffee</strong></a>
-<section class="feedback"><div><p class="eyebrow">Help improve it</p><h2>Questions or feedback?</h2><p>Cabin Drinks was created by Zach as an independent crew tool. Report a problem or suggest what would make it more useful on your flights.</p><div class="feedback-paths"><a class="feedback-path" href="https://github.com/zachfranzen123/cabin-drinks/issues/new?template=bug_report.yml" target="_blank" rel="noopener noreferrer"><span><strong>Report a bug</strong><span>Tell me what went wrong and how to reproduce it.</span></span><b aria-hidden="true">↗</b></a><a class="feedback-path" href="https://github.com/zachfranzen123/cabin-drinks/issues/new?template=feature_request.yml" target="_blank" rel="noopener noreferrer"><span><strong>Request a feature</strong><span>Suggest an improvement for a real service workflow.</span></span><b aria-hidden="true">↗</b></a></div><p class="feedback-public"><strong>GitHub submissions are public.</strong> Do not include passenger names, flight details, employee information, or company-sensitive information. A free GitHub account is required.</p><a href="https://github.com/zachfranzen123/cabin-drinks/issues" target="_blank" rel="noopener noreferrer">View open requests and progress ↗</a></div><form id="feedbackForm"><label>Your name <input id="feedbackName" autocomplete="name" placeholder="Optional"></label><label>Private feedback by email <textarea id="feedbackMessage" required placeholder="What should be added or changed?"></textarea></label><button class="primary" type="submit">Send private feedback</button><small>This opens your email app so you can review the message before sending. Do not include passenger or company-sensitive information.</small></form></section></main>
-<footer><span>Cabin Drinks</span><p>Independent crew utility. Always follow current company procedures, service standards, and onboard availability.</p></footer><script src="./landing.js" defer></script><!-- Cloudflare Web Analytics --><script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"95818106f4164158a05500f0138e5df4"}'></script><!-- End Cloudflare Web Analytics --></body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#202423">
+<title>Cabin Drinks · Offline food and beverage service pad</title>
+<meta name="description" content="A fast, offline-friendly food and beverage order pad designed for inflight service.">
+<link rel="manifest" href="./manifest.json">
+<link rel="icon" href="./app-icon.svg">
+<link rel="apple-touch-icon" href="./app-icon.svg">
+<link rel="stylesheet" href="./landing.css">
+<link rel="stylesheet" href="./history.css">
+<link rel="stylesheet" href="./about.css">
+<link rel="stylesheet" href="./support.css">
+<link rel="stylesheet" href="./showcase.css">
+<link rel="stylesheet" href="./hero-mockup.css">
+<link rel="stylesheet" href="./install.css">
+</head>
+<body>
+<header class="nav">
+<a class="brand" href="./">
+<img src="./app-icon.svg" alt="">
+<span>Cabin Drinks</span>
+</a>
+<div class="nav-actions">
+<a class="history-link" href="#versions">Version history</a>
+<button id="shareButton" class="text-button">Share</button>
+</div>
+</header>
+<main>
+<section class="hero">
+<div class="hero-copy">
+<p class="eyebrow">Built for inflight service</p>
+<span class="current-version">Version 14 · Current</span>
+<h1>Take food &amp; drink orders.<br>Skip the scribbled notes.</h1>
+<p class="intro">Tap a seat, add beverages and First Class food choices, prepare everything in the galley, and check complete orders off during delivery. After installation, it works without an internet connection.</p>
+<div class="actions">
+<a class="primary" href="./app.html">Open Cabin Drinks</a>
+<button id="installButton" class="secondary install-action" type="button">Install Cabin Drinks</button>
+</div>
+<div id="offlineStatus" class="offline-status" role="status" aria-live="polite"><span class="status-dot"></span><strong>Checking offline readiness…</strong></div>
+<p class="privacy">No account. No passenger names. Orders stay on your device.</p>
+</div>
+<div class="phone realistic-phone" aria-label="Cabin Drinks First Class seat map preview">
+<div class="phone-top">
+<small>FIRST CLASS</small>
+<strong>Cabin Drinks</strong>
+</div>
+<div class="mock-cabin-tabs">
+<span class="active">First Class</span>
+<span>Premium</span>
+</div>
+<div class="realistic-map">
+<span>
+</span>
+<span class="seat-letter">A</span>
+<span class="seat-letter">C</span>
+<b class="aisle">
+</b>
+<span class="seat-letter">D</span>
+<span class="seat-letter">F</span>
+<span class="row-number">1</span>
+<i>A</i>
+<i>C</i>
+<b class="aisle">
+</b>
+<i>D</i>
+<i>F</i>
+<span class="row-number">2</span>
+<i>A</i>
+<i class="selected">2C</i>
+<b class="aisle">
+</b>
+<i>D</i>
+<i class="ordered">F</i>
+<span class="row-number">3</span>
+<i>A</i>
+<i>C</i>
+<b class="aisle">
+</b>
+<i>D</i>
+<i>F</i>
+<span class="row-number">4</span>
+<i>A</i>
+<i>C</i>
+<b class="aisle">
+</b>
+<i>D</i>
+<i>F</i>
+</div>
+<div class="mini-order">
+<small>2C · food &amp; drink</small>
+<strong>Fruit &amp; Cheese Plate</strong>
+<span>Stumptown Coffee · Irish cream · Oat milk</span>
+</div>
+</div>
+</section>
+<section class="features">
+<article>
+<span>01</span>
+<h2>Take</h2>
+<p>Choose First Class or Premium, tap a seat, then add drinks and First Class food choices.</p>
+</article>
+<article>
+<span>02</span>
+<h2>Prepare</h2>
+<p>See food tallies and complete galley instructions grouped by seat, including quantities and modifiers.</p>
+</article>
+<article>
+<span>03</span>
+<h2>Deliver</h2>
+<p>Return to the cabin and confirm each seat’s complete food-and-beverage order as it is delivered.</p>
+</article>
+</section>
+<section class="real-service">
+<div>
+<p class="eyebrow">Improved by crew feedback</p>
+<h2>Built around how service actually happens.</h2>
+<p class="service-intro">Recent requests from working crew have made Cabin Drinks quicker to navigate, clearer in the galley, and more dependable when the cabin goes offline.</p>
+<div class="latest-features">
+<article>
+<strong>Water &amp; coffee first</strong>
+<span>Most-requested categories are now immediately available.</span>
+</article>
+<article>
+<strong>Larger category grid</strong>
+<span>Big controls replace the horizontally scrolling category strip.</span>
+</article>
+<article>
+<strong>First Class food tally</strong>
+<span>Load today’s choices, assign seats, and watch inventory update.</span>
+</article>
+<article>
+<strong>Complete modifiers</strong>
+<span>Creamers, sweeteners, ice, citrus, doubles, and coffee additions stay with the order.</span>
+</article>
+<article>
+<strong>Faster mixed drinks</strong>
+<span>Common recipes, custom builds, and their editors stay together.</span>
+</article>
+<article>
+<strong>Airplane-mode ready</strong>
+<span>A strengthened offline launch keeps the installed app available inflight.</span>
+</article>
+</div>
+</div>
+<div class="device-showcase" aria-label="Cabin Drinks being used during inflight service">
+<figure class="screenshot-phone">
+<img src="./app-seat-map.png" alt="Cabin Drinks Premium seat map with active beverage orders" loading="lazy">
+<figcaption>Take orders by seat</figcaption>
+</figure>
+<figure class="screenshot-phone">
+<img src="./app-prepare-orders.png" alt="Cabin Drinks galley preparation list with seats and drink modifiers" loading="lazy">
+<figcaption>Prepare everything in the galley</figcaption>
+</figure>
+</div>
+</section>
+<section id="install" class="install">
+<div>
+<p class="eyebrow">Install on your phone</p>
+<h2>Ready for airplane mode</h2>
+<p>Tap the button and Cabin Drinks will show only the instructions for your device. Once its files are safely stored, you’ll see an Offline Ready confirmation.</p>
+</div>
+<div class="install-card"><div class="install-card-copy"><span class="install-icon" aria-hidden="true">✈️</span><div><strong>Cabin Drinks</strong><span>Fast access · Full screen · Works offline</span></div></div><button id="installButtonSecondary" class="primary" type="button">Install Cabin Drinks</button><div id="installReadiness" class="readiness-line" role="status"><span class="status-dot"></span><span>Checking this device…</span></div></div>
+<div class="install-promises"><span>✓ No App Store</span><span>✓ No account</span><span>✓ Automatic updates</span></div>
+</section>
+<section class="guide">
+<p class="eyebrow">Quick start</p>
+<h2>From seat map to service</h2>
+<div class="guide-grid">
+<article>
+<strong>1</strong>
+<p>Select the aircraft and cabin. In First Class, set up today’s food inventory.</p>
+</article>
+<article>
+<strong>2</strong>
+<p>Tap a seat and add each requested food item and drink.</p>
+</article>
+<article>
+<strong>3</strong>
+<p>Use Common Drinks or Build Your Own for mixed combinations.</p>
+</article>
+<article>
+<strong>4</strong>
+<p>Open Prepare for galley totals, then Deliver when you return to the cabin.</p>
+</article>
+</div>
+</section>
+<section class="meet-zach">
+<div class="about-card">
+<div class="zach-mark" aria-hidden="true">ZF</div>
+<div class="about-copy">
+<p class="eyebrow">Behind the app</p>
+<h2>Hi, I’m Zach.</h2>
+<p>I built Cabin Drinks as a small independent project to make inflight service a little easier for our crew community. When I’m not tinkering with the app, you’ll often find me behind a camera.</p>
+<div class="zach-links">
+<a href="https://www.instagram.com/dayabay/" target="_blank" rel="noopener noreferrer">
+<span>Follow along</span>
+<strong>@dayabay</strong>
+<i aria-hidden="true">↗</i>
+</a>
+<a href="https://www.hizach.com/" target="_blank" rel="noopener noreferrer">
+<span>Photography</span>
+<strong>hizach.com</strong>
+<i aria-hidden="true">↗</i>
+</a>
+</div>
+</div>
+</div>
+</section>
+<section id="versions" class="versions">
+<div class="versions-heading">
+<div>
+<p class="eyebrow">Built one flight at a time</p>
+<h2>Version History</h2>
+</div>
+<p>See how Cabin Drinks grew from a simple seat-and-drink pad into a complete offline service companion.</p>
+</div>
+<div class="release-list">
+<details class="release" open><summary><span><b>Version 14</b><strong>Easy Install &amp; Updates</strong></span><em>Current</em></summary><div><p>A guided, device-aware installation and a clearer guarantee that Cabin Drinks is ready to fly.</p><ul><li>One prominent install action with iPhone-specific guidance</li><li>Offline Ready status confirms required files are stored</li><li>Automatic update checks on launch, reconnect, and return to the app</li><li>New versions activate cleanly while saved orders remain on the device</li></ul></div></details>
+<details class="release">
+<summary>
+<span>
+<b>Version 13</b>
+<strong>Fresh Flight Reset</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<p>A clearer reset and a smoother First Class food setup on iPhone.</p>
+<ul>
+<li>New Clear All option removes orders, reservations, and the loaded food menu</li>
+<li>Clear Orders remains available when the same food menu should be reused</li>
+<li>Visible version badge inside the app</li>
+<li>Food inputs no longer trigger unwanted iPhone zoom</li>
+<li>Larger, more responsive meal quantity controls</li>
+</ul>
+</div>
+</details>
+<details class="release" open>
+<summary>
+<span>
+<b>Version 12</b>
+<strong>Faster Service</strong>
+</span>
+<em>Current</em>
+</summary>
+<div>
+<p>Less hunting, less horizontal scrolling, and stronger offline reliability.</p>
+<ul>
+<li>Juice &amp; Water and Coffee &amp; Teas moved to the front</li>
+<li>Larger, scroll-free category grid</li>
+<li>Coffee additions for Irish cream and hazelnut espresso vodka</li>
+<li>Improved iPhone food-quantity controls and Home Screen offline launch</li>
+<li>Common mixed-drink editors moved directly beneath their recipes</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 11</b>
+<strong>First Class Food</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<p>Replace the paper meal tally with a live, flight-specific inventory.</p>
+<ul>
+<li>Custom food menu and loaded quantities for First Class</li>
+<li>Reserve food by seat with automatic remaining counts</li>
+<li>Sold-out protection plus food tallies in Prepare and Deliver</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 10</b>
+<strong>Redeye Ready</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<p>A calmer, clearer experience for overnight service.</p>
+<ul>
+<li>Dark mode with a remembered sun/moon setting</li>
+<li>Drink orders and modifiers are more prominent in Delivery</li>
+<li>“Tap when delivered” guidance is intentionally quieter</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 9</b>
+<strong>Correct Cabin View</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<p>The reversed map now matches what crew actually see while walking the aisle.</p>
+<ul>
+<li>Forward view remains ABC · DEF</li>
+<li>Reverse view displays FED · CBA</li>
+<li>First Class reverse view displays FD · CA</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 8</b>
+<strong>Delivery Confidence</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>Airplane control reverses the row sequence</li>
+<li>Delivery cards show creams, sugars, and every modifier</li>
+<li>More complete handoff details before marking a seat delivered</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 7</b>
+<strong>Coffee &amp; Tea Polish</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>Cleaner Jasmine Green Tea label and coffee-specific modifiers</li>
+<li>Dairy or oat milk with quantities</li>
+<li>Sugar or sweetener with quantities</li>
+<li>Clear Orders moved to the top of the main screen</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 6</b>
+<strong>Ready to Share</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>New public landing page and installation guide</li>
+<li>Quick-start instructions and help</li>
+<li>Share, email contact, and feedback options</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 5</b>
+<strong>Mixed Drinks</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>Build Your Own mixed-drink workflow</li>
+<li>Bloody Mary quick build</li>
+<li>Lemon, lime, and grapefruit citrus packets</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 4</b>
+<strong>First Class</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>First Class and Premium cabin switcher</li>
+<li>Rows 1–4 with AC · DF seating</li>
+<li>Repeated taps add quantities, including double spirits</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 3</b>
+<strong>Multiple Drinks</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>More than one drink per seat</li>
+<li>Dairy and oat milk choices</li>
+<li>Cream and sugar quantities</li>
+<li>Existing saved orders migrated to the new format</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 2</b>
+<strong>Public &amp; Offline</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>Installable offline web app at drinks.hizach.com</li>
+<li>Aircraft selection and premium exit-row layouts</li>
+<li>Branded onboard beverage menu</li>
+</ul>
+</div>
+</details>
+<details class="release">
+<summary>
+<span>
+<b>Version 1</b>
+<strong>First Prototype</strong>
+</span>
+<em>July 2026</em>
+</summary>
+<div>
+<ul>
+<li>Tap a seat, then choose a drink</li>
+<li>Prepare and Deliver views</li>
+<li>Orders stored locally on the device</li>
+</ul>
+</div>
+</details>
+</div>
+</section>
+<a class="tip-badge" href="https://donate.stripe.com/4gM00k2Pk49k4T7e986wE00" target="_blank" rel="noopener noreferrer" aria-label="Buy me a coffee to support Cabin Drinks">
+<span aria-hidden="true">☕</span>
+<strong>Buy Me a Coffee</strong>
+</a>
+<section class="feedback">
+<div>
+<p class="eyebrow">Help improve it</p>
+<h2>Questions or feedback?</h2>
+<p>Cabin Drinks was created by Zach as an independent crew tool. Tell me what would make it more useful on your flights.</p>
+<a href="mailto:zach@hizach.com">zach@hizach.com</a>
+</div>
+<form id="feedbackForm">
+<label>Your name <input id="feedbackName" autocomplete="name" placeholder="Optional">
+</label>
+<label>Feedback <textarea id="feedbackMessage" required placeholder="What should be added or changed?">
+</textarea>
+</label>
+<button class="primary" type="submit">Send feedback</button>
+<small>This opens your email app so you can review the message before sending.</small>
+</form>
+</section>
+</main>
+<footer>
+<span>Cabin Drinks</span>
+<p>Independent crew utility. Always follow current company procedures, service standards, and onboard availability.</p>
+</footer>
+<div id="installSheet" class="install-sheet" hidden><button class="sheet-backdrop" type="button" data-close-install aria-label="Close installation instructions"></button><section class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="installSheetTitle"><div class="sheet-handle" aria-hidden="true"></div><button class="sheet-close" type="button" data-close-install aria-label="Close">×</button><p class="eyebrow" id="installDeviceLabel">Install on iPhone</p><h2 id="installSheetTitle">Add Cabin Drinks to your Home Screen</h2><div id="installSteps" class="install-steps"></div><button id="installContinue" class="primary sheet-action" type="button">Got it</button><p class="sheet-note">Keep this page open until you see <strong>Offline Ready</strong>.</p></section></div>
+<div id="updateToast" class="update-toast" hidden role="status"><span>Cabin Drinks was updated.</span><strong>Version 14</strong></div>
+<script src="./updater.js" defer></script>
+<script src="./landing.js" defer>
+</script>
+<!-- Cloudflare Web Analytics -->
+<script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"95818106f4164158a05500f0138e5df4"}'>
+</script>
+<!-- End Cloudflare Web Analytics -->
+</body>
+</html>
