@@ -1,0 +1,52 @@
+name: Suggest a feature
+description: Share an idea that could make Cabin Drinks more useful during service.
+title: "[Feature]: "
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing an idea. Please do not include passenger names, flight numbers, or other sensitive information.
+  - type: textarea
+    id: need
+    attributes:
+      label: What service problem would this solve?
+      description: Describe the real inflight situation or workflow that prompted the idea.
+      placeholder: During service, it is difficult to…
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: What would you like Cabin Drinks to do?
+      description: Explain the feature in plain language.
+      placeholder: It would help if the app could…
+    validations:
+      required: true
+  - type: dropdown
+    id: area
+    attributes:
+      label: Which part of the app?
+      options:
+        - Seat map / taking orders
+        - Drink menu or modifiers
+        - First Class food inventory
+        - Prepare view
+        - Deliver view
+        - Installation or updates
+        - Landing page
+        - Other
+    validations:
+      required: true
+  - type: textarea
+    id: workflow
+    attributes:
+      label: How would you use it?
+      description: A quick example helps determine the best design.
+      placeholder: For example, I would tap… then…
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Add sketches, screenshots, or related ideas. Do not include passenger or flight information.
