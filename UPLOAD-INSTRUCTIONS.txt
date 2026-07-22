@@ -1,26 +1,22 @@
-Cabin Drinks v6 update
+GITHUB FEEDBACK UPDATE
 
-Upload the following files to the root of the GitHub repository. Allow GitHub to replace files with matching names:
+Upload the contents of this folder to the root of zachfranzen123/cabin-drinks.
+Preserve the .github/ISSUE_TEMPLATE folder structure.
 
-- index.html
-- app.html
-- app.js
-- multi-order.css
-- help.css
-- landing.css
-- landing.js
-- manifest.json
-- sw.js
+Files:
+  .github/ISSUE_TEMPLATE/bug_report.yml
+  .github/ISSUE_TEMPLATE/feature_request.yml
+  .github/ISSUE_TEMPLATE/config.yml
+  github-feedback.css
+  index.html
 
-Commit the upload to the main branch. GitHub Pages will republish automatically.
+After upload:
+1. Open the repository's Issues tab.
+2. Click New issue and confirm both forms appear.
+3. Open drinks.hizach.com and confirm the feedback buttons appear.
+4. GitHub login is required to submit a public issue; the email form remains.
 
-Important: This package includes all v4 and v5 features. You do not need to upload those earlier packages first.
-
-New in v6:
-- Public landing page at drinks.hizach.com
-- App launches at drinks.hizach.com/app.html
-- iPhone, iPad, and Android installation instructions
-- Quick-start usage guide
-- Share button
-- Contact and email-based feedback form
-- Help link inside the app
+To let ChatGPT publish future changes directly, install the ChatGPT Codex
+Connector on the zachfranzen123 account/repository with repository Contents
+read/write access. The current connection can read the repository but GitHub
+returned 403 for file creation.

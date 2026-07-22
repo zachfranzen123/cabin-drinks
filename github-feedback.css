@@ -1,0 +1,8 @@
+.feedback-paths{margin:22px 0 26px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.feedback-path{min-height:74px;padding:15px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--line);border-radius:13px;background:var(--raised);text-decoration:none}
+.feedback-path strong,.feedback-path span{display:block}
+.feedback-path strong{font-size:15px}
+.feedback-path span{margin-top:4px;color:var(--muted);font-size:11px;line-height:1.35}
+.feedback-path b{color:var(--teal);font-size:22px}
+.feedback-public{margin:0 0 18px;padding:12px 14px;border-left:3px solid var(--coral);color:var(--muted);background:#fff7ef;font-size:11px;line-height:1.5}
+@media(max-width:560px){.feedback-paths{grid-template-columns:1fr}}
