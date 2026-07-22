@@ -3,6 +3,6 @@ document.querySelector("#shareButton").addEventListener("click",async()=>{const 
 document.querySelector("#feedbackForm").addEventListener("submit",event=>{event.preventDefault();const name=document.querySelector("#feedbackName").value.trim();const message=document.querySelector("#feedbackMessage").value.trim();location.href=`mailto:zach@hizach.com?subject=${encodeURIComponent("Cabin Drinks feedback")}&body=${encodeURIComponent(`${message}\n\nFrom: ${name||"A Cabin Drinks user"}`)}`});
 
 const currentVersion=document.querySelector(".current-version");
-if(currentVersion)currentVersion.textContent="Version 13 · Current";
+if(currentVersion)currentVersion.textContent="Version 14 · Current";
 const version12=[...document.querySelectorAll(".release")].find(item=>item.querySelector("b")?.textContent.trim()==="Version 12");
 if(version12){version12.open=false;const label=version12.querySelector("em");if(label)label.textContent="July 2026"}
