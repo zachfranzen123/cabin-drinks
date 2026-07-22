@@ -1,0 +1,74 @@
+name: Report a bug
+description: Tell us about something that did not work as expected.
+title: "[Bug]: "
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for helping improve Cabin Drinks. Please do not include passenger names, flight numbers, or other sensitive information.
+  - type: textarea
+    id: problem
+    attributes:
+      label: What happened?
+      description: Describe what you expected and what happened instead.
+      placeholder: I tapped… and then…
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to reproduce
+      description: List the steps that consistently cause the problem.
+      placeholder: |
+        1. Open Cabin Drinks
+        2. Select…
+        3. Tap…
+    validations:
+      required: true
+  - type: dropdown
+    id: device
+    attributes:
+      label: Device
+      options:
+        - iPhone
+        - iPad
+        - Android phone
+        - Android tablet
+        - Computer
+        - Other
+    validations:
+      required: true
+  - type: dropdown
+    id: launch
+    attributes:
+      label: How were you using Cabin Drinks?
+      options:
+        - Installed from Home Screen
+        - Opened in Safari
+        - Opened in Chrome
+        - Other browser
+    validations:
+      required: true
+  - type: dropdown
+    id: connection
+    attributes:
+      label: Connection status
+      options:
+        - Online
+        - Airplane mode / offline
+        - Not sure
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: The version appears on the landing page and inside the app.
+      placeholder: Version 14
+  - type: textarea
+    id: extra
+    attributes:
+      label: Anything else?
+      description: Add screenshots or other useful details. Do not include passenger or flight information.
