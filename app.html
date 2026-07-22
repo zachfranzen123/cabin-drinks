@@ -9,7 +9,6 @@
   <meta name="apple-mobile-web-app-title" content="Cabin Drinks">
   <title>Cabin Drinks</title>
   <meta name="description" content="Offline premium cabin beverage order pad">
-  <script>if("serviceWorker" in navigator){navigator.serviceWorker.register("./sw.js").then(()=>navigator.serviceWorker.ready).catch(()=>{})}</script>
   <link rel="manifest" href="./manifest.json">
   <link rel="icon" href="./app-icon.svg">
   <link rel="apple-touch-icon" href="./app-icon.svg">
@@ -23,9 +22,12 @@
   <link rel="stylesheet" href="./food.css">
   <link rel="stylesheet" href="./usability.css">
   <link rel="stylesheet" href="./v13.css">
+  <link rel="stylesheet" href="./install.css">
 </head>
 <body>
   <main class="shell"><section id="app" class="app-card" aria-label="Cabin drink orders"></section></main>
+  <div id="updateToast" class="update-toast" hidden role="status"><span>Cabin Drinks was updated.</span><strong>Version 14</strong></div>
+  <script src="./updater.js" defer></script>
   <script src="./app.js" defer></script>
   <!-- Cloudflare Web Analytics -->
   <script type="module" src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token":"95818106f4164158a05500f0138e5df4"}'></script>
