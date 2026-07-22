@@ -1,6 +1,6 @@
 (()=>{
   const VERSION="14";
-  const CACHE_NAME="cabin-drinks-v14";
+  const CACHE_NAME="cabin-drinks-v14-readiness";
   const isStandalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   const isAndroid=/Android/i.test(navigator.userAgent);
@@ -8,24 +8,46 @@
   const isEmbedded=/FBAN|FBAV|Instagram|Line|WhatsApp/i.test(navigator.userAgent);
   let deferredPrompt=null;
   let refreshing=false;
+  let installStarted=false;
+  let statusTimer=null;
 
-  const setStatus=(ready,message)=>{
-    [document.querySelector("#offlineStatus"),document.querySelector("#installReadiness")].filter(Boolean).forEach(node=>{
-      node.classList.toggle("is-ready",ready===true);
-      node.classList.toggle("is-error",ready===false);
+  const statusNodes=[document.querySelector("#offlineStatus"),document.querySelector("#installReadiness")].filter(Boolean);
+  statusNodes.forEach(node=>node.hidden=true);
+
+  const setStatus=(state,message,{temporary=false,force=false}={})=>{
+    clearTimeout(statusTimer);
+    statusNodes.forEach(node=>{
+      const shouldShow=force||installStarted||state==="error";
+      node.hidden=!shouldShow;
+      node.classList.toggle("is-ready",state==="ready");
+      node.classList.toggle("is-error",state==="error");
       const text=node.querySelector("strong")||node.querySelector("span:last-child");
       if(text)text.textContent=message;
     });
+    if(temporary){
+      statusTimer=setTimeout(()=>statusNodes.forEach(node=>node.hidden=true),4500);
+    }
   };
 
-  const confirmOfflineReady=async()=>{
-    if(!("serviceWorker" in navigator)||!("caches" in window)){setStatus(false,"This browser cannot install the offline app");return}
+  const confirmOfflineReady=async({showResult=false}={})=>{
+    if(!("serviceWorker" in navigator)||!("caches" in window)){
+      if(showResult)setStatus("error","Offline use is not supported in this browser",{force:true});
+      return false;
+    }
     try{
       await navigator.serviceWorker.ready;
       const ready=await caches.has(CACHE_NAME);
-      setStatus(ready,ready?"Offline Ready · Version 14":"Finishing offline setup…");
-      if(!ready)setTimeout(confirmOfflineReady,1200);
-    }catch{setStatus(false,"Offline setup needs an internet connection")}
+      if(ready){
+        if(showResult)setStatus("ready","Ready for airplane mode ✓",{temporary:true,force:true});
+        return true;
+      }
+      if(showResult)setStatus("working","Preparing for airplane mode…",{force:true});
+      setTimeout(()=>confirmOfflineReady({showResult}),1200);
+      return false;
+    }catch{
+      if(showResult)setStatus("error","Keep this page open while connected to finish setup",{force:true});
+      return false;
+    }
   };
 
   const showUpdated=()=>{
@@ -47,7 +69,7 @@
         const registration=await navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"});
         await registration.update().catch(()=>{});
         confirmOfflineReady();
-      }catch{setStatus(false,"Offline setup needs an internet connection")}
+      }catch{}
       if(sessionStorage.getItem("cabinDrinksUpdated")===VERSION){sessionStorage.removeItem("cabinDrinksUpdated");showUpdated()}
     });
     const check=()=>navigator.serviceWorker.getRegistration().then(reg=>reg?.update()).catch(()=>{});
@@ -57,7 +79,7 @@
   }
 
   window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();deferredPrompt=event});
-  window.addEventListener("appinstalled",()=>{deferredPrompt=null;setStatus(true,"Installed · Offline Ready · Version 14")});
+  window.addEventListener("appinstalled",()=>{deferredPrompt=null;installStarted=true;setStatus("ready","Ready for airplane mode ✓",{temporary:true,force:true})});
 
   const sheet=document.querySelector("#installSheet");
   const steps=document.querySelector("#installSteps");
@@ -69,6 +91,9 @@
   const openSheet=()=>{if(sheet){sheet.hidden=false;document.body.style.overflow="hidden"}};
 
   const install=async()=>{
+    installStarted=true;
+    setStatus("working","Preparing for airplane mode…",{force:true});
+    confirmOfflineReady({showResult:true});
     if(isStandalone){location.href="./app.html";return}
     if(deferredPrompt){
       deferredPrompt.prompt();
@@ -92,13 +117,13 @@
     }else if(isAndroid){
       label.textContent="Install on Android";
       title.textContent="Add Cabin Drinks to your Home Screen";
-      steps.innerHTML=step("1","Open Chrome’s menu","Tap the three dots near the address bar.")+step("2","Tap Install app","It may also say Add to Home screen.")+step("3","Confirm Install","Open Cabin Drinks once while online to finish offline setup.");
+      steps.innerHTML=step("1","Open Chrome’s menu","Tap the three dots near the address bar.")+step("2","Tap Install app","It may also say Add to Home screen.")+step("3","Confirm Install","Open Cabin Drinks once while online to prepare it for airplane mode.");
       continueButton.textContent="Got it";
       continueButton.onclick=closeSheet;
     }else{
       label.textContent="Install Cabin Drinks";
       title.textContent="Use your browser’s app install option";
-      steps.innerHTML=step("1","Open the browser menu","Look for Install app, Add to Home Screen, or Add to Dock.")+step("2","Confirm installation","Cabin Drinks will open in its own app window.")+step("3","Open it once while online","Wait for Offline Ready before your flight.");
+      steps.innerHTML=step("1","Open the browser menu","Look for Install app, Add to Home Screen, or Add to Dock.")+step("2","Confirm installation","Cabin Drinks will open in its own app window.")+step("3","Open it once while online","Cabin Drinks will then be ready for airplane mode.");
       continueButton.textContent="Got it";
       continueButton.onclick=closeSheet;
     }
@@ -108,5 +133,4 @@
   document.querySelectorAll("#installButton,#installButtonSecondary").forEach(button=>button.addEventListener("click",install));
   document.querySelectorAll("[data-close-install]").forEach(button=>button.addEventListener("click",closeSheet));
   document.addEventListener("keydown",event=>{if(event.key==="Escape")closeSheet()});
-  if(isStandalone)setStatus(true,"Installed · Checking for updates…");
 })();
