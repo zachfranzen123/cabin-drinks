@@ -1,4 +1,4 @@
-const CACHE="cabin-drinks-v14-feedback";
+const CACHE="cabin-drinks-v14-feedback-2";
 const SHELL=["./","./index.html","./app.html","./landing.css","./history.css","./about.css","./support.css","./showcase.css","./hero-mockup.css","./install.css","./landing.js","./updater.js","./style.css","./multi-order.css","./help.css","./v7.css","./v8.css","./delivery-details.css","./v10.css","./food.css","./usability.css","./v13.css","./app.js","./manifest.json","./app-icon.svg","./app-seat-map.png","./app-prepare-orders.png"];
 
 self.addEventListener("install",event=>{
@@ -16,14 +16,15 @@ self.addEventListener("fetch",event=>{
   const url=new URL(event.request.url);
   if(url.origin!==self.location.origin)return;
 
-  if(event.request.mode==="navigate"){
+  if(event.request.mode==="navigate"||url.pathname.endsWith("/landing.js")||url.pathname.endsWith("/index.html")){
     event.respondWith((async()=>{
       try{
-        const response=await fetch(event.request);
+        const response=await fetch(event.request,{cache:"no-store"});
         if(response&&response.ok){const copy=response.clone();event.waitUntil(caches.open(CACHE).then(cache=>cache.put(event.request,copy)))}
         return response;
       }catch{
-        return caches.match(url.pathname.endsWith("app.html")?"./app.html":"./index.html");
+        if(event.request.mode==="navigate")return caches.match(url.pathname.endsWith("app.html")?"./app.html":"./index.html");
+        return caches.match(event.request,{ignoreSearch:true});
       }
     })());
     return;
