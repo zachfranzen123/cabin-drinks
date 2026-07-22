@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Email Zach
+    url: mailto:zach@hizach.com
+    about: Use email when you would rather not create a GitHub issue.
