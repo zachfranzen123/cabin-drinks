@@ -43,7 +43,7 @@
       await navigator.serviceWorker.ready;
       const ready=await caches.has(CACHE_NAME);
       if(ready){
-        setStatus("ready",`Offline Ready · Version ${VERSION}`,{force:true});
+        setStatus("ready",`Offline Ready · Version ${VERSION}`,{temporary:true,force:true});
         return true;
       }
       setStatus("working","Finishing offline setup…",{force:true});
