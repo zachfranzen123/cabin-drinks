@@ -47,7 +47,9 @@ const mountNewsletter=()=>{
       const response=await fetch('/api/signup',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email})});
       const data=await response.json().catch(()=>({}));
       if(!response.ok)throw new Error(data.error||'Something went wrong. Please try again.');
-      form.classList.add('is-success');input.disabled=true;button.textContent='✓ You’re on the list';status.textContent=data.alreadySubscribed?'You were already signed up — welcome back!':'Welcome aboard! Check your inbox for a confirmation.';status.classList.add('success');
+      form.classList.add('is-success');input.disabled=true;button.textContent='✓ You’re on the list';
+      status.textContent=data.alreadySubscribed?'You were already signed up — welcome back!':data.welcomeEmail===false?'You’re on the list. The welcome email could not be sent, but your signup was saved.':'Welcome aboard! Check your inbox for a welcome email.';
+      status.classList.add('success');
     }catch(error){button.disabled=false;button.textContent='Join the Crew';status.textContent=error.message||'Something went wrong. Please try again.';status.classList.add('error');}
   });
 };
