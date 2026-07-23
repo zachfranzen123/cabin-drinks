@@ -1,6 +1,6 @@
 (()=>{
   const VERSION="14";
-  const CACHE_NAME="cabin-drinks-v14-readiness-fix";
+  const OFFLINE_FILES=["./app.html","./app.js","./style.css","./multi-order.css","./help.css","./v7.css","./v8.css","./delivery-details.css","./v10.css","./food.css","./usability.css","./v13.css","./install.css","./manifest.json","./app-icon.svg"];
   const isStandalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
   const isAppPage=Boolean(document.querySelector("#appOfflineStatus"));
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
@@ -42,7 +42,8 @@
     }
     try{
       await navigator.serviceWorker.ready;
-      const ready=await caches.has(CACHE_NAME);
+      const cachedFiles=await Promise.all(OFFLINE_FILES.map(path=>caches.match(new URL(path,location.href).href)));
+      const ready=cachedFiles.every(Boolean);
       if(ready){
         setStatus("ready",`Offline Ready · Version ${VERSION}`,{temporary:true,force:true});
         return true;
