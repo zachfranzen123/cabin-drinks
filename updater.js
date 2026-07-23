@@ -1,7 +1,8 @@
 (()=>{
   const VERSION="14";
-  const CACHE_NAME="cabin-drinks-v14-launch-guidance";
+  const CACHE_NAME="cabin-drinks-v14-readiness-fix";
   const isStandalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
+  const isAppPage=Boolean(document.querySelector("#appOfflineStatus"));
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   const isAndroid=/Android/i.test(navigator.userAgent);
   const isSafari=/Safari/i.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS|OPiOS/i.test(navigator.userAgent);
@@ -30,8 +31,8 @@
     }
   };
 
-  const confirmOfflineReady=async({showResult=false}={})=>{
-    if(!isStandalone){
+  const confirmOfflineReady=async({showResult=false,attempt=0}={})=>{
+    if(!isStandalone&&!isAppPage){
       if(showResult)setStatus("working","Install, then launch once while online",{force:true});
       return false;
     }
@@ -47,7 +48,11 @@
         return true;
       }
       setStatus("working","Finishing offline setup…",{force:true});
-      setTimeout(()=>confirmOfflineReady({showResult:true}),1200);
+      if(attempt>=12){
+        setStatus("error","Offline setup needs a refresh — stay online and reload",{force:true});
+        return false;
+      }
+      setTimeout(()=>confirmOfflineReady({showResult:true,attempt:attempt+1}),1200);
       return false;
     }catch{
       setStatus("error","Connect once to finish offline setup",{force:true});
@@ -73,9 +78,9 @@
       try{
         const registration=await navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"});
         await registration.update().catch(()=>{});
-        confirmOfflineReady({showResult:isStandalone});
+        confirmOfflineReady({showResult:isStandalone||isAppPage});
       }catch{
-        if(isStandalone)setStatus("error","Connect once to finish offline setup",{force:true});
+        if(isStandalone||isAppPage)setStatus("error","Connect once to finish offline setup",{force:true});
       }
       if(sessionStorage.getItem("cabinDrinksUpdated")===VERSION){sessionStorage.removeItem("cabinDrinksUpdated");showUpdated()}
     });
