@@ -1,6 +1,6 @@
 (()=>{
   const VERSION="14";
-  const CACHE_NAME="cabin-drinks-v14-about-circle";
+  const CACHE_NAME="cabin-drinks-v14-launch-guidance";
   const isStandalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   const isAndroid=/Android/i.test(navigator.userAgent);
@@ -11,13 +11,14 @@
   let installStarted=false;
   let statusTimer=null;
 
-  const statusNodes=[document.querySelector("#offlineStatus"),document.querySelector("#installReadiness")].filter(Boolean);
-  statusNodes.forEach(node=>node.hidden=true);
+  const statusNodes=[document.querySelector("#offlineStatus"),document.querySelector("#installReadiness"),document.querySelector("#appOfflineStatus")].filter(Boolean);
+  statusNodes.forEach(node=>node.hidden=node.id!=="appOfflineStatus");
 
   const setStatus=(state,message,{temporary=false,force=false}={})=>{
     clearTimeout(statusTimer);
     statusNodes.forEach(node=>{
-      const shouldShow=force||installStarted||state==="error";
+      const isAppStatus=node.id==="appOfflineStatus";
+      const shouldShow=isAppStatus||force||installStarted||state==="error";
       node.hidden=!shouldShow;
       node.classList.toggle("is-ready",state==="ready");
       node.classList.toggle("is-error",state==="error");
@@ -30,22 +31,26 @@
   };
 
   const confirmOfflineReady=async({showResult=false}={})=>{
+    if(!isStandalone){
+      if(showResult)setStatus("working","Install, then launch once while online",{force:true});
+      return false;
+    }
     if(!("serviceWorker" in navigator)||!("caches" in window)){
-      if(showResult)setStatus("error","Offline use is not supported in this browser",{force:true});
+      setStatus("error","Offline use is not supported in this browser",{force:true});
       return false;
     }
     try{
       await navigator.serviceWorker.ready;
       const ready=await caches.has(CACHE_NAME);
       if(ready){
-        if(showResult)setStatus("ready","Ready for airplane mode ✓",{temporary:true,force:true});
+        setStatus("ready",`Offline Ready · Version ${VERSION}`,{force:true});
         return true;
       }
-      if(showResult)setStatus("working","Preparing for airplane mode…",{force:true});
-      setTimeout(()=>confirmOfflineReady({showResult}),1200);
+      setStatus("working","Finishing offline setup…",{force:true});
+      setTimeout(()=>confirmOfflineReady({showResult:true}),1200);
       return false;
     }catch{
-      if(showResult)setStatus("error","Keep this page open while connected to finish setup",{force:true});
+      setStatus("error","Connect once to finish offline setup",{force:true});
       return false;
     }
   };
@@ -68,8 +73,10 @@
       try{
         const registration=await navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"});
         await registration.update().catch(()=>{});
-        confirmOfflineReady();
-      }catch{}
+        confirmOfflineReady({showResult:isStandalone});
+      }catch{
+        if(isStandalone)setStatus("error","Connect once to finish offline setup",{force:true});
+      }
       if(sessionStorage.getItem("cabinDrinksUpdated")===VERSION){sessionStorage.removeItem("cabinDrinksUpdated");showUpdated()}
     });
     const check=()=>navigator.serviceWorker.getRegistration().then(reg=>reg?.update()).catch(()=>{});
@@ -79,7 +86,7 @@
   }
 
   window.addEventListener("beforeinstallprompt",event=>{event.preventDefault();deferredPrompt=event});
-  window.addEventListener("appinstalled",()=>{deferredPrompt=null;installStarted=true;setStatus("ready","Ready for airplane mode ✓",{temporary:true,force:true})});
+  window.addEventListener("appinstalled",()=>{deferredPrompt=null;installStarted=true;setStatus("ready","Installed — launch once while online",{temporary:true,force:true})});
 
   const sheet=document.querySelector("#installSheet");
   const steps=document.querySelector("#installSteps");
@@ -92,8 +99,6 @@
 
   const install=async()=>{
     installStarted=true;
-    setStatus("working","Preparing for airplane mode…",{force:true});
-    confirmOfflineReady({showResult:true});
     if(isStandalone){location.href="./app.html";return}
     if(deferredPrompt){
       deferredPrompt.prompt();
@@ -106,7 +111,7 @@
       label.textContent="Install on iPhone";
       title.textContent="Three taps and you’re ready to fly";
       steps.innerHTML=step("1","Tap Safari’s Share button","Look for the square with the upward arrow at the bottom of the screen.")+step("2","Tap Add to Home Screen","Scroll the action list if it is not immediately visible.")+step("3","Turn on Open as Web App, then tap Add","Cabin Drinks will appear on your Home Screen like an app.");
-      continueButton.textContent="Show me the app first";
+      continueButton.textContent="Launch app";
       continueButton.onclick=()=>{location.href="./app.html"};
     }else if(isIOS){
       label.textContent="One quick detour";
