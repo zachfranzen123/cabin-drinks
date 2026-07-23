@@ -20,18 +20,28 @@
 }
 .zach-portrait{
   width:204px;
-  aspect-ratio:1;
+  height:204px;
+  min-width:204px;
+  min-height:204px;
   display:grid;
   place-items:center;
+  overflow:visible;
+  border-radius:50%;
 }
 .zach-mark{
   width:204px;
-  aspect-ratio:1;
-  display:grid;
-  place-items:center;
-  border-radius:50%;
+  height:204px;
+  min-width:204px;
+  min-height:204px;
+  display:block;
   overflow:hidden;
-  background:#fff url('./A1C049B2-7FF4-41EC-9220-E4BF0FF22D71.png') center/cover no-repeat;
+  border-radius:50%;
+  clip-path:circle(50% at 50% 50%);
+  background-color:#fff;
+  background-image:url('./A1C049B2-7FF4-41EC-9220-E4BF0FF22D71.png');
+  background-position:center;
+  background-size:cover;
+  background-repeat:no-repeat;
   box-shadow:0 18px 42px rgba(32,36,35,.18),0 4px 12px rgba(32,36,35,.1);
   font-size:0;
   color:transparent;
@@ -155,7 +165,10 @@ main>section:nth-of-type(8){animation-delay:.42s}
     text-align:left;
   }
   .zach-portrait,.zach-mark{
-    width:min(62vw,204px);
+    width:204px;
+    height:204px;
+    min-width:204px;
+    min-height:204px;
   }
   .zach-portrait{margin:0 auto}
   .about-copy h2{font-size:2.7rem}
