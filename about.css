@@ -1,6 +1,174 @@
-.meet-zach{padding:clamp(4rem,8vw,7rem) max(5vw,calc((100vw - 1180px)/2));background:#e0f1ed;color:#202423}.about-card{max-width:980px;margin:0 auto;padding:clamp(1.5rem,4vw,3.5rem);display:grid;grid-template-columns:180px minmax(0,1fr);gap:clamp(1.5rem,5vw,4rem);align-items:center;border:1px solid #b7d3cd;border-radius:28px;background:#f9fffd;box-shadow:0 22px 65px rgba(32,36,35,.1)}.zach-mark{width:180px;aspect-ratio:1;display:grid;place-items:center;border-radius:50%;overflow:hidden;background:#fff url('./A1C049B2-7FF4-41EC-9220-E4BF0FF22D71.png') center/cover no-repeat;box-shadow:0 14px 34px rgba(32,36,35,.14);font-size:0;color:transparent}.about-copy .eyebrow{margin:0 0 .45rem;color:#168c82}.about-copy h2{margin:0 0 .8rem;font-size:clamp(2.5rem,5vw,4.5rem);line-height:.95;letter-spacing:-.055em}.about-copy>p:not(.eyebrow){max-width:660px;margin:0;color:#52605c;font-size:1.08rem;line-height:1.65}.zach-links{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.8rem;margin-top:1.8rem}.zach-links a{position:relative;min-height:92px;padding:1.05rem 2.8rem 1.05rem 1.1rem;display:flex;flex-direction:column;justify-content:center;border:1px solid #bdd8d2;border-radius:16px;color:#202423;background:#fff;text-decoration:none;transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease}.zach-links a:hover{transform:translateY(-2px);border-color:#55b7ac;box-shadow:0 10px 28px rgba(32,36,35,.1)}.zach-links span,.zach-links strong{display:block}.zach-links span{margin-bottom:.35rem;color:#64807a;font-size:.72rem;font-weight:850;letter-spacing:.07em;text-transform:uppercase}.zach-links strong{font-size:1.05rem}.zach-links i{position:absolute;right:1rem;top:50%;translate:0 -50%;color:#239b90;font-size:1.25rem;font-style:normal}
-main>section{animation:section-arrive .65s both cubic-bezier(.2,.8,.2,1)}main>section:nth-of-type(2){animation-delay:.06s}main>section:nth-of-type(3){animation-delay:.12s}main>section:nth-of-type(4){animation-delay:.18s}main>section:nth-of-type(5){animation-delay:.24s}main>section:nth-of-type(6){animation-delay:.3s}main>section:nth-of-type(7){animation-delay:.36s}main>section:nth-of-type(8){animation-delay:.42s}.features article,.latest-features article,.guide-grid article,.zach-links a,.github-feedback-card{animation:item-arrive .5s both cubic-bezier(.2,.8,.2,1)}.features article:nth-child(2),.latest-features article:nth-child(2),.guide-grid article:nth-child(2),.zach-links a:nth-child(2),.github-feedback-card:nth-child(2){animation-delay:.07s}.features article:nth-child(3),.latest-features article:nth-child(3),.guide-grid article:nth-child(3),.github-feedback-card:nth-child(3){animation-delay:.14s}.latest-features article:nth-child(4),.guide-grid article:nth-child(4){animation-delay:.21s}.latest-features article:nth-child(5){animation-delay:.28s}.latest-features article:nth-child(6){animation-delay:.35s}@keyframes section-arrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}@keyframes item-arrive{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
-@media(max-width:700px){.meet-zach{padding:3.5rem 1rem}.about-card{grid-template-columns:1fr;padding:1.4rem;border-radius:22px;text-align:left}.zach-mark{width:min(56vw,180px);margin:0 auto}.about-copy h2{font-size:2.7rem}.about-copy>p:not(.eyebrow){font-size:1rem}.zach-links{grid-template-columns:1fr}.zach-links a{min-height:80px}}
-@media(prefers-reduced-motion:reduce){main>section,.features article,.latest-features article,.guide-grid article,.zach-links a,.github-feedback-card{animation:none!important}}
-/* Keep this section independent from earlier landing-page layout rules. */
-.meet-zach{display:block}
+.meet-zach{
+  display:block;
+  padding:clamp(4rem,8vw,7rem) max(5vw,calc((100vw - 1180px)/2));
+  background:#e0f1ed;
+  color:#202423;
+  animation:none!important;
+}
+.about-card{
+  max-width:1020px;
+  margin:0 auto;
+  padding:clamp(1.5rem,4vw,3.5rem);
+  display:grid;
+  grid-template-columns:204px minmax(0,1fr);
+  gap:clamp(1.75rem,5vw,4.25rem);
+  align-items:center;
+  border:1px solid #b7d3cd;
+  border-radius:28px;
+  background:#f9fffd;
+  box-shadow:0 22px 65px rgba(32,36,35,.1);
+}
+.zach-portrait{
+  width:204px;
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+}
+.zach-mark{
+  width:204px;
+  aspect-ratio:1;
+  display:grid;
+  place-items:center;
+  border-radius:50%;
+  overflow:hidden;
+  background:#fff url('./A1C049B2-7FF4-41EC-9220-E4BF0FF22D71.png') center/cover no-repeat;
+  box-shadow:0 18px 42px rgba(32,36,35,.18),0 4px 12px rgba(32,36,35,.1);
+  font-size:0;
+  color:transparent;
+}
+.about-copy .eyebrow{
+  margin:0 0 .5rem;
+  color:#168c82;
+}
+.about-copy h2{
+  margin:0 0 .65rem;
+  font-size:clamp(2.5rem,5vw,4.5rem);
+  line-height:.95;
+  letter-spacing:-.055em;
+}
+.about-subheading{
+  max-width:690px;
+  margin:0 0 1.35rem!important;
+  color:#294943!important;
+  font-size:clamp(1.05rem,2vw,1.28rem)!important;
+  font-weight:700;
+  line-height:1.45!important;
+}
+.about-body{
+  max-width:690px;
+}
+.about-body p{
+  margin:0 0 .78rem;
+  color:#52605c;
+  font-size:1.04rem;
+  line-height:1.62;
+}
+.about-body p:last-child{margin-bottom:0}
+.zach-links{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:.8rem;
+  margin-top:1.8rem;
+}
+.zach-links a{
+  position:relative;
+  min-height:92px;
+  padding:1.05rem 2.8rem 1.05rem 1.1rem;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  border:1px solid #bdd8d2;
+  border-radius:16px;
+  color:#202423;
+  background:#fff;
+  text-decoration:none;
+  animation:none!important;
+  transition:transform .15s ease,box-shadow .15s ease,border-color .15s ease;
+}
+.zach-links a:hover{
+  transform:translateY(-2px);
+  border-color:#55b7ac;
+  box-shadow:0 10px 28px rgba(32,36,35,.1);
+}
+.zach-links span,.zach-links strong{display:block}
+.zach-links span{
+  margin-bottom:.35rem;
+  color:#64807a;
+  font-size:.72rem;
+  font-weight:850;
+  letter-spacing:.07em;
+  text-transform:uppercase;
+}
+.zach-links strong{font-size:1.05rem}
+.zach-links i{
+  position:absolute;
+  right:1rem;
+  top:50%;
+  translate:0 -50%;
+  color:#239b90;
+  font-size:1.25rem;
+  font-style:normal;
+}
+
+/* About reveal: portrait to links completes in roughly 600ms. */
+.about-reveal{
+  opacity:0;
+  transform:translateY(10px);
+  animation:about-reveal .26s both cubic-bezier(.2,.8,.2,1);
+}
+.about-reveal-portrait{animation-delay:0ms;transform:translateY(6px) scale(.965)}
+.about-reveal-eyebrow{animation-delay:70ms}
+.about-reveal-heading{animation-delay:140ms}
+.about-reveal-subheading{animation-delay:210ms}
+.about-reveal-body{animation-delay:280ms}
+.about-reveal-links{animation-delay:340ms}
+@keyframes about-reveal{
+  to{opacity:1;transform:none}
+}
+
+/* Existing light reveals elsewhere on the landing page. */
+main>section{animation:section-arrive .65s both cubic-bezier(.2,.8,.2,1)}
+main>section:nth-of-type(2){animation-delay:.06s}
+main>section:nth-of-type(3){animation-delay:.12s}
+main>section:nth-of-type(4){animation-delay:.18s}
+main>section:nth-of-type(5){animation-delay:.24s}
+main>section:nth-of-type(6){animation-delay:.3s}
+main>section:nth-of-type(7){animation-delay:.36s}
+main>section:nth-of-type(8){animation-delay:.42s}
+.features article,.latest-features article,.guide-grid article,.github-feedback-card{
+  animation:item-arrive .5s both cubic-bezier(.2,.8,.2,1)
+}
+.features article:nth-child(2),.latest-features article:nth-child(2),.guide-grid article:nth-child(2),.github-feedback-card:nth-child(2){animation-delay:.07s}
+.features article:nth-child(3),.latest-features article:nth-child(3),.guide-grid article:nth-child(3),.github-feedback-card:nth-child(3){animation-delay:.14s}
+.latest-features article:nth-child(4),.guide-grid article:nth-child(4){animation-delay:.21s}
+.latest-features article:nth-child(5){animation-delay:.28s}
+.latest-features article:nth-child(6){animation-delay:.35s}
+@keyframes section-arrive{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
+@keyframes item-arrive{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+
+@media(max-width:700px){
+  .meet-zach{padding:3.5rem 1rem}
+  .about-card{
+    grid-template-columns:1fr;
+    padding:1.4rem;
+    border-radius:22px;
+    text-align:left;
+  }
+  .zach-portrait,.zach-mark{
+    width:min(62vw,204px);
+  }
+  .zach-portrait{margin:0 auto}
+  .about-copy h2{font-size:2.7rem}
+  .about-subheading{font-size:1.08rem!important}
+  .about-body p{font-size:1rem}
+  .zach-links{grid-template-columns:1fr}
+  .zach-links a{min-height:80px}
+}
+
+@media(prefers-reduced-motion:reduce){
+  main>section,.features article,.latest-features article,.guide-grid article,.github-feedback-card,.about-reveal{
+    opacity:1!important;
+    transform:none!important;
+    animation:none!important;
+  }
+}
