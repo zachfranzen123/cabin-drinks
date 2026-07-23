@@ -1,6 +1,6 @@
 (()=>{
   const VERSION="14";
-  const CACHE_NAME="cabin-drinks-v14-about-elio";
+  const CACHE_NAME="cabin-drinks-v14-about-circle";
   const isStandalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
   const isIOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==="MacIntel"&&navigator.maxTouchPoints>1);
   const isAndroid=/Android/i.test(navigator.userAgent);
