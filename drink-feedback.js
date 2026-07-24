@@ -1,13 +1,20 @@
+let lastScrolledName=null;
 const applyDrinkSelectionFeedback=()=>{
   const editorTitle=document.querySelector('.drink-editor .editor-title strong');
   const activeName=editorTitle?.textContent?.replace(/^Edit\s+/,'').trim();
+  let selectedButton=null;
   document.querySelectorAll('.drink-grid [data-drink]').forEach(button=>{
     const selected=Boolean(activeName)&&button.dataset.drink===activeName;
     button.classList.toggle('selected-choice',selected);
     button.setAttribute('aria-pressed',selected?'true':'false');
     const action=button.querySelector('em');
     if(action){const text=selected?'Added ✓':'+ Add';if(action.textContent!==text)action.textContent=text;}
+    if(selected)selectedButton=button;
   });
+  if(selectedButton&&activeName!==lastScrolledName){
+    selectedButton.scrollIntoView({inline:'nearest',block:'nearest'});
+  }
+  lastScrolledName=activeName||null;
 };
 
 const feedbackStyle=document.createElement('style');
