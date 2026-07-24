@@ -1,8 +1,8 @@
-const CACHE="cabin-drinks-v14-hot-water";
+const CACHE="cabin-drinks-v15";
 const SHELL=["./","./index.html","./app.html","./landing.css","./history.css","./about.css","./support.css","./showcase.css","./hero-mockup.css","./install.css","./hype.css","./landing.js","./updater.js","./style.css","./multi-order.css","./help.css","./v7.css","./v8.css","./delivery-details.css","./v10.css","./food.css","./usability.css","./v13.css","./app.js","./drink-feedback.js","./hot-water.js","./manifest.json","./app-icon.svg","./app-seat-map.png","./app-prepare-orders.png","./A1C049B2-7FF4-41EC-9220-E4BF0FF22D71.png"];
 
 self.addEventListener("install",event=>{
-  event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(SHELL)));
+  event.waitUntil(caches.open(CACHE).then(async cache=>{await Promise.all(SHELL.map(async f=>{try{await cache.add(f);}catch(e){console.warn("Cache failed",f);}}));}));
   self.skipWaiting();
 });
 
