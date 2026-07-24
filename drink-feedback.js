@@ -6,7 +6,7 @@ const applyDrinkSelectionFeedback=()=>{
     button.classList.toggle('selected-choice',selected);
     button.setAttribute('aria-pressed',selected?'true':'false');
     const action=button.querySelector('em');
-    if(action)action.textContent=selected?'Added ✓':'+ Add';
+    if(action){const text=selected?'Added ✓':'+ Add';if(action.textContent!==text)action.textContent=text;}
   });
 };
 
