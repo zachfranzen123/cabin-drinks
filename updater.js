@@ -69,12 +69,7 @@
   };
 
   if("serviceWorker" in navigator){
-    navigator.serviceWorker.addEventListener("controllerchange",()=>{
-      if(refreshing)return;
-      refreshing=true;
-      sessionStorage.setItem("cabinDrinksUpdated",VERSION);
-      location.reload();
-    });
+    navigator.serviceWorker.addEventListener("controllerchange",()=>{if(refreshing)return;refreshing=true;sessionStorage.setItem("cabinDrinksUpdated",VERSION);showUpdated();confirmOfflineReady({showResult:true});});
     window.addEventListener("load",async()=>{
       try{
         const registration=await navigator.serviceWorker.register("./sw.js",{updateViaCache:"none"});
