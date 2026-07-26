@@ -1,11 +1,11 @@
 .real-service {
-  padding: clamp(4.5rem, 9vw, 7.5rem) max(5vw, calc((100vw - 1120px) / 2));
-  display: grid;
-  grid-template-columns: minmax(0, .9fr) minmax(460px, 1.1fr);
-  gap: clamp(3rem, 7vw, 7rem);
-  align-items: center;
-  overflow: hidden;
+  padding: clamp(4.5rem, 9vw, 7.5rem) max(5vw, calc((100vw - 900px) / 2));
   background: #dff2ee;
+}
+
+.real-service > div {
+  max-width: 780px;
+  margin: 0 auto;
 }
 
 .real-service h2 {
@@ -105,10 +105,6 @@
 }
 
 @media (max-width: 900px) {
-  .real-service {
-    grid-template-columns: 1fr;
-  }
-
   .device-showcase {
     width: min(100%, 620px);
     margin: 0 auto;
