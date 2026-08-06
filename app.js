@@ -141,8 +141,7 @@ function scanReviewPanel(){
 
 function scanControls(){
   if(state.scanDraft)return scanReviewPanel();
-  const online=typeof navigator==="undefined"||navigator.onLine;
-  return `<div class="scan-menu-block"><button class="scan-menu-button" data-action="scan-menu" type="button" ${online&&!state.scanning?"":"disabled"}>${state.scanning?"Scanning…":"📷 Scan a menu photo"}</button>${!online?`<span class="scan-hint">Connect to scan a menu</span>`:state.scanError?`<span class="scan-hint scan-hint-error">${esc(state.scanError)}</span>`:""}</div>`;
+  return `<div class="scan-menu-block"><button class="scan-menu-button" data-action="scan-menu" type="button" ${state.scanning?"disabled":""}>${state.scanning?"Reading menu…":"📷 Scan a menu photo"}</button>${state.scanError?`<span class="scan-hint scan-hint-error">${esc(state.scanError)}</span>`:`<span class="scan-hint">First scan downloads a small offline reader (~6MB); after that it works with no connection.</span>`}</div>`;
 }
 
 function foodPanel(order){
@@ -229,7 +228,7 @@ app.addEventListener("click",event=>{
   save();render();
 });
 
-function resizeImageToBase64(file){
+function resizeImageForOcr(file){
   return new Promise((resolve,reject)=>{
     const reader=new FileReader();
     reader.onerror=()=>reject(reader.error);
@@ -237,12 +236,12 @@ function resizeImageToBase64(file){
       const img=new Image();
       img.onerror=reject;
       img.onload=()=>{
-        const maxDim=1600,scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+        const maxDim=1800,scale=Math.min(1,maxDim/Math.max(img.width,img.height));
         const canvas=document.createElement("canvas");
         canvas.width=Math.round(img.width*scale);
         canvas.height=Math.round(img.height*scale);
         canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
-        resolve(canvas.toDataURL("image/jpeg",0.82).split(",")[1]);
+        resolve(canvas);
       };
       img.src=reader.result;
     };
@@ -250,18 +249,37 @@ function resizeImageToBase64(file){
   });
 }
 
+let tesseractWorker=null;
+function getTesseractWorker(){
+  if(!tesseractWorker)tesseractWorker=Tesseract.createWorker("eng",Tesseract.OEM.LSTM_ONLY,{
+    workerPath:"./vendor/tesseract/worker.min.js",
+    corePath:"./vendor/tesseract/",
+    langPath:"./tessdata",
+    gzip:true
+  });
+  return tesseractWorker;
+}
+
+function extractMenuItemsFromText(text){
+  const seen=new Set();
+  return text.split(/\r?\n/)
+    .map(line=>line.replace(/\s*\$?\d+(\.\d{2})?\s*$/,"").replace(/[|_~]+/g," ").replace(/\s+/g," ").trim())
+    .filter(line=>line.length>=3&&line.length<=60&&/[A-Za-z]{3}/.test(line)&&!/^\$?\d+(\.\d{2})?$/.test(line))
+    .filter(line=>{const key=line.toLowerCase();if(seen.has(key))return false;seen.add(key);return true})
+    .slice(0,40);
+}
+
 async function scanMenuPhoto(file){
   state.scanning=true;state.scanError=null;render();
   try{
-    const image=await resizeImageToBase64(file);
-    const response=await fetch("/api/scan-menu",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({image})});
-    const data=await response.json().catch(()=>({}));
-    if(!response.ok)throw new Error(data.error||"Scan failed");
-    const items=Array.isArray(data.items)?data.items:[];
+    const canvas=await resizeImageForOcr(file);
+    const worker=await getTesseractWorker();
+    const {data:{text}}=await worker.recognize(canvas);
+    const items=extractMenuItemsFromText(text);
     if(items.length)state.scanDraft=items;
-    else state.scanError="No food items found in that photo. Try a clearer picture or add items manually.";
+    else state.scanError="No food items found in that photo. Try a clearer, closer picture or add items manually.";
   }catch{
-    state.scanError=navigator.onLine?"Couldn’t read that menu. Try again or add items manually.":"You’re offline — connect to scan a menu.";
+    state.scanError=navigator.onLine?"Couldn’t read that menu. Try again or add items manually.":"Couldn’t load the offline scanner. Connect once to download it, then it works with no connection.";
   }finally{
     state.scanning=false;render();
   }
@@ -269,8 +287,6 @@ async function scanMenuPhoto(file){
 
 document.body.insertAdjacentHTML("beforeend",'<input type="file" id="menuPhotoInput" accept="image/*" capture="environment" hidden>');
 document.getElementById("menuPhotoInput").addEventListener("change",event=>{const file=event.target.files[0];event.target.value="";if(file)scanMenuPhoto(file)});
-window.addEventListener("online",render);
-window.addEventListener("offline",render);
 
 render();
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js");
