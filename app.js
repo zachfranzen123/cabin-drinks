@@ -265,13 +265,52 @@ function getTesseractWorker(){
   return tesseractWorker;
 }
 
-function extractMenuItemsFromText(text){
+function cleanScanLine(line){
+  return line.replace(/\s*\$?\d+(\.\d{2})?\s*$/,"").replace(/[|_~]+/g," ").replace(/\s+/g," ").trim();
+}
+
+function isUsableScanLine(line){
+  return line.length>=3&&line.length<=60&&/[A-Za-z]{3}/.test(line)&&!/^\$?\d+(\.\d{2})?$/.test(line);
+}
+
+function dedupeScanLines(lines){
   const seen=new Set();
-  return text.split(/\r?\n/)
-    .map(line=>line.replace(/\s*\$?\d+(\.\d{2})?\s*$/,"").replace(/[|_~]+/g," ").replace(/\s+/g," ").trim())
-    .filter(line=>line.length>=3&&line.length<=60&&/[A-Za-z]{3}/.test(line)&&!/^\$?\d+(\.\d{2})?$/.test(line))
-    .filter(line=>{const key=line.toLowerCase();if(seen.has(key))return false;seen.add(key);return true})
-    .slice(0,40);
+  return lines.filter(line=>{const key=line.toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
+}
+
+function extractMenuItemsFromText(text){
+  return dedupeScanLines(text.split(/\r?\n/).map(cleanScanLine).filter(isUsableScanLine)).slice(0,40);
+}
+
+// Tesseract's LSTM engine (the small offline model this app uses) doesn't populate
+// the is_bold/is_underlined flags it reports per word, so we can't key off styling
+// directly. Font size is still exposed per word, and on menus with headed items
+// (name printed noticeably larger than its description/allergen lines) it acts as
+// a decent stand-in: keep only lines whose average word size is well above the
+// page's median, and toss the usual non-name field labels (Contains/Dietary/etc).
+// Menus without a size difference between item names and the rest just fall back
+// to grabbing every line, same as before.
+const SCAN_FIELD_LABELS=/\b(contains|dietary|served|allergen|allergy|calories|preorder|appendix|handbook|onboard service|on tray|dessert|snack basket|main menu|short haul|long haul)\b/i;
+
+function extractMenuItemsFromBlocks(blocks,fallbackText){
+  const lines=[];
+  for(const block of blocks||[])for(const para of block.paragraphs||[])for(const line of para.lines||[]){
+    const words=line.words||[];
+    if(!words.length)continue;
+    const sizes=words.map(w=>w.font_size).filter(n=>n>0);
+    if(!sizes.length)continue;
+    lines.push({text:line.text||"",avgSize:sizes.reduce((a,b)=>a+b,0)/sizes.length,wordCount:words.length});
+  }
+  const sizes=lines.map(l=>l.avgSize).sort((a,b)=>a-b);
+  const median=sizes.length?sizes[Math.floor(sizes.length/2)]:0;
+  const threshold=median*1.2;
+  const headings=median?dedupeScanLines(lines
+    .filter(l=>l.avgSize>=threshold&&l.wordCount<=8&&!l.text.includes(":"))
+    .map(l=>cleanScanLine(l.text))
+    .filter(isUsableScanLine)
+    .filter(line=>!SCAN_FIELD_LABELS.test(line))):[];
+  if(headings.length)return headings.slice(0,40);
+  return extractMenuItemsFromText(fallbackText);
 }
 
 async function scanMenuPhoto(file){
@@ -279,8 +318,8 @@ async function scanMenuPhoto(file){
   try{
     const canvas=await resizeImageForOcr(file);
     const worker=await getTesseractWorker();
-    const {data:{text}}=await worker.recognize(canvas);
-    const items=extractMenuItemsFromText(text);
+    const{data}=await worker.recognize(canvas,{},{blocks:true,text:true,hocr:false,tsv:false});
+    const items=extractMenuItemsFromBlocks(data.blocks,data.text);
     if(items.length)state.scanDraft=items;
     else state.scanError="No food items found in that photo. Try a clearer, closer picture or add items manually.";
   }catch{
