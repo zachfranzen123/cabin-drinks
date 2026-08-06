@@ -1,5 +1,5 @@
 (()=>{
-  const VERSION="14";
+  const VERSION="15";
   const OFFLINE_FILES=["./app.html","./app.js","./style.css","./multi-order.css","./help.css","./v7.css","./v8.css","./delivery-details.css","./v10.css","./food.css","./usability.css","./v13.css","./install.css","./manifest.json","./app-icon.svg"];
   const isStandalone=window.matchMedia("(display-mode: standalone)").matches||navigator.standalone===true;
   const isAppPage=Boolean(document.querySelector("#appOfflineStatus"));

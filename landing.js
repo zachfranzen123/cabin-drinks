@@ -63,5 +63,5 @@ style.textContent=`
 @media(prefers-reduced-motion:reduce){.flow-step,.flow-arrow,.flow-progress span,.share-panel{transition:none!important}}
 `;
 document.head.appendChild(style);
-const currentVersion=document.querySelector(".current-version");if(currentVersion)currentVersion.textContent="Version 14 · Current";
+const currentVersion=document.querySelector(".current-version");if(currentVersion)currentVersion.textContent="Version 15 · Current";
 const version12=[...document.querySelectorAll(".release")].find(item=>item.querySelector("b")?.textContent.trim()==="Version 12");if(version12){version12.open=false;const label=version12.querySelector("em");if(label)label.textContent="July 2026"}
