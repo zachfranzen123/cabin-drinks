@@ -265,8 +265,8 @@ async function scanMenuPhoto(file){
     const items=Array.isArray(data.items)?data.items:[];
     if(items.length)state.scanDraft=items;
     else state.scanError="No food items found in that photo. Try a clearer picture or add items manually.";
-  }catch{
-    state.scanError=navigator.onLine?"Couldn’t read that menu. Try again or add items manually.":"You’re offline — connect to scan a menu.";
+  }catch(err){
+    state.scanError=navigator.onLine?(err?.message||"Couldn’t read that menu. Try again or add items manually."):"You’re offline — connect to scan a menu.";
   }finally{
     state.scanning=false;render();
   }
