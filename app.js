@@ -136,7 +136,7 @@ function mixedBuilder(active) {
 
 function scanReviewPanel(){
   const count=state.scanDraft.length;
-  return `<div class="scan-review"><div class="scan-review-title"><strong>Review scanned items</strong><span>Fix anything that isn’t right, remove what doesn’t belong, and add anything the scan missed.</span></div><div class="scan-review-list">${state.scanDraft.map((name,index)=>`<div class="scan-review-row"><input data-scan-name="${index}" value="${esc(name)}" aria-label="Scanned food item"><button data-scan-remove="${index}" aria-label="Remove ${esc(name)}">×</button></div>`).join("")}</div><div class="scan-review-add"><input id="scanNewItem" value="${esc(state.scanNewItem)}" placeholder="Add a missed item" aria-label="New scanned item"><button data-action="scan-add-item" type="button" ${state.scanNewItem.trim()?"":"disabled"}>+ Add</button></div>${count?`<button class="food-add-button" data-action="scan-confirm">Add ${count} item${count===1?"":"s"} to menu</button>`:`<p class="food-setup-hint">All items removed.</p>`}<button class="scan-cancel" data-action="scan-cancel" type="button">Cancel</button></div>`;
+  return `<div class="scan-review"><div class="scan-review-title"><strong>Review scanned items</strong><span>Fix anything that isn’t right, set today’s loaded quantity, remove what doesn’t belong, and add anything the scan missed.</span></div><div class="scan-review-list">${state.scanDraft.map((item,index)=>`<div class="scan-review-row"><input data-scan-name="${index}" value="${esc(item.name)}" aria-label="Scanned food item"><button data-scan-qty="${index}" data-delta="-1" aria-label="Reduce loaded quantity">−</button><strong>${item.qty}</strong><button data-scan-qty="${index}" data-delta="1" aria-label="Increase loaded quantity">+</button><button class="scan-remove" data-scan-remove="${index}" aria-label="Remove ${esc(item.name)}">×</button></div>`).join("")}</div><div class="scan-review-add"><input id="scanNewItem" value="${esc(state.scanNewItem)}" placeholder="Add a missed item" aria-label="New scanned item"><button data-action="scan-add-item" type="button" ${state.scanNewItem.trim()?"":"disabled"}>+ Add</button></div>${count?`<button class="food-add-button" data-action="scan-confirm">Add ${count} item${count===1?"":"s"} to menu</button>`:`<p class="food-setup-hint">All items removed.</p>`}<button class="scan-cancel" data-action="scan-cancel" type="button">Cancel</button></div>`;
 }
 
 function scanControls(){
@@ -187,7 +187,7 @@ app.addEventListener("input",event=>{if(event.target.id==="newFoodName"){state.f
 app.addEventListener("change",event=>{
   if(event.target.matches('[data-action="plane"]')){state.plane=event.target.value;save();render();return}
   if(event.target.dataset.foodName){const item=state.foodMenu.find(x=>x.id===event.target.dataset.foodName);if(item&&event.target.value.trim())item.name=event.target.value.trim();save();render();return}
-  if(event.target.dataset.scanName!==undefined&&state.scanDraft){state.scanDraft[Number(event.target.dataset.scanName)]=event.target.value;save();render();return}
+  if(event.target.dataset.scanName!==undefined&&state.scanDraft){state.scanDraft[Number(event.target.dataset.scanName)].name=event.target.value;save();render();return}
 });
 app.addEventListener("click",event=>{
   const remove=event.target.closest("[data-remove-drink]");
@@ -222,8 +222,9 @@ app.addEventListener("click",event=>{
   if(target.dataset.action==="food-add"){const name=state.foodDraft.name.trim(),qty=state.foodDraft.qty;if(name){state.foodMenu.push({id:`food-${Date.now()}`,name,loaded:qty});state.foodDraft={name:"",qty:1};state.foodSetup=true}}
   if(target.dataset.action==="scan-menu")document.getElementById("menuPhotoInput")?.click();
   if(target.dataset.scanRemove!==undefined&&state.scanDraft)state.scanDraft.splice(Number(target.dataset.scanRemove),1);
-  if(target.dataset.action==="scan-add-item"&&state.scanDraft){const name=state.scanNewItem.trim();if(name){state.scanDraft.push(name);state.scanNewItem=""}}
-  if(target.dataset.action==="scan-confirm"&&state.scanDraft){state.scanDraft.forEach((name,index)=>{const trimmed=name.trim();if(trimmed)state.foodMenu.push({id:`food-${Date.now()}-${index}`,name:trimmed,loaded:1})});state.scanDraft=null;state.scanError=null}
+  if(target.dataset.scanQty!==undefined&&state.scanDraft){const item=state.scanDraft[Number(target.dataset.scanQty)];if(item)item.qty=Math.max(1,Math.min(99,item.qty+Number(target.dataset.delta)))}
+  if(target.dataset.action==="scan-add-item"&&state.scanDraft){const name=state.scanNewItem.trim();if(name){state.scanDraft.push({name,qty:1});state.scanNewItem=""}}
+  if(target.dataset.action==="scan-confirm"&&state.scanDraft){state.scanDraft.forEach((item,index)=>{const trimmed=item.name.trim();if(trimmed)state.foodMenu.push({id:`food-${Date.now()}-${index}`,name:trimmed,loaded:item.qty})});state.scanDraft=null;state.scanError=null}
   if(target.dataset.action==="scan-cancel"){state.scanDraft=null;state.scanError=null}
   if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=state.orders[state.seat].drinks.length?0:null;state.category=state.orders[state.seat].foods?.length?"Food":state.orders[state.seat].drinks[0]?.category||"Juice & Water";state.mode="take"}
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
@@ -263,7 +264,7 @@ async function scanMenuPhoto(file){
     const data=await response.json().catch(()=>({}));
     if(!response.ok)throw new Error(data.error||"Scan failed");
     const items=Array.isArray(data.items)?data.items:[];
-    if(items.length)state.scanDraft=items;
+    if(items.length)state.scanDraft=items.map(name=>({name,qty:1}));
     else state.scanError="No food items found in that photo. Try a clearer picture or add items manually.";
   }catch(err){
     state.scanError=navigator.onLine?(err?.message||"Couldn’t read that menu. Try again or add items manually."):"You’re offline — connect to scan a menu.";
