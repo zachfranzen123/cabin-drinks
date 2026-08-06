@@ -141,7 +141,8 @@ function scanReviewPanel(){
 
 function scanControls(){
   if(state.scanDraft)return scanReviewPanel();
-  return `<div class="scan-menu-block"><button class="scan-menu-button" data-action="scan-menu" type="button" ${state.scanning?"disabled":""}>${state.scanning?"Reading menu…":"📷 Scan a menu photo"}</button>${state.scanError?`<span class="scan-hint scan-hint-error">${esc(state.scanError)}</span>`:`<span class="scan-hint">First scan downloads a small offline reader (~6MB); after that it works with no connection.</span>`}</div>`;
+  const online=navigator.onLine;
+  return `<div class="scan-menu-block"><button class="scan-menu-button" data-action="scan-menu" type="button" ${online&&!state.scanning?"":"disabled"}>${state.scanning?"Reading menu…":"📷 Scan a menu photo"}</button>${!online?`<span class="scan-hint">Connect to scan a menu</span>`:state.scanError?`<span class="scan-hint scan-hint-error">${esc(state.scanError)}</span>`:`<span class="scan-hint">Uses Claude to read item names off a photo. Requires a connection.</span>`}</div>`;
 }
 
 function foodPanel(order){
@@ -233,7 +234,7 @@ app.addEventListener("click",event=>{
   save();render();
 });
 
-function resizeImageForOcr(file){
+function resizeImageToBase64(file){
   return new Promise((resolve,reject)=>{
     const reader=new FileReader();
     reader.onerror=()=>reject(reader.error);
@@ -241,12 +242,12 @@ function resizeImageForOcr(file){
       const img=new Image();
       img.onerror=reject;
       img.onload=()=>{
-        const maxDim=1800,scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+        const maxDim=1600,scale=Math.min(1,maxDim/Math.max(img.width,img.height));
         const canvas=document.createElement("canvas");
         canvas.width=Math.round(img.width*scale);
         canvas.height=Math.round(img.height*scale);
         canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
-        resolve(canvas);
+        resolve(canvas.toDataURL("image/jpeg",0.82).split(",")[1]);
       };
       img.src=reader.result;
     };
@@ -254,76 +255,18 @@ function resizeImageForOcr(file){
   });
 }
 
-let tesseractWorker=null;
-function getTesseractWorker(){
-  if(!tesseractWorker)tesseractWorker=Tesseract.createWorker("eng",Tesseract.OEM.LSTM_ONLY,{
-    workerPath:"./vendor/tesseract/worker.min.js",
-    corePath:"./vendor/tesseract/",
-    langPath:"./tessdata",
-    gzip:true
-  });
-  return tesseractWorker;
-}
-
-function cleanScanLine(line){
-  return line.replace(/\s*\$?\d+(\.\d{2})?\s*$/,"").replace(/[|_~]+/g," ").replace(/\s+/g," ").trim();
-}
-
-function isUsableScanLine(line){
-  return line.length>=3&&line.length<=60&&/[A-Za-z]{3}/.test(line)&&!/^\$?\d+(\.\d{2})?$/.test(line);
-}
-
-function dedupeScanLines(lines){
-  const seen=new Set();
-  return lines.filter(line=>{const key=line.toLowerCase();if(seen.has(key))return false;seen.add(key);return true});
-}
-
-function extractMenuItemsFromText(text){
-  return dedupeScanLines(text.split(/\r?\n/).map(cleanScanLine).filter(isUsableScanLine)).slice(0,40);
-}
-
-// Tesseract's LSTM engine (the small offline model this app uses) doesn't populate
-// the is_bold/is_underlined flags it reports per word, so we can't key off styling
-// directly. Font size is still exposed per word, and on menus with headed items
-// (name printed noticeably larger than its description/allergen lines) it acts as
-// a decent stand-in: keep only lines whose average word size is well above the
-// page's median, and toss the usual non-name field labels (Contains/Dietary/etc).
-// Menus without a size difference between item names and the rest just fall back
-// to grabbing every line, same as before.
-const SCAN_FIELD_LABELS=/\b(contains|dietary|served|allergen|allergy|calories|preorder|appendix|handbook|onboard service|on tray|dessert|snack basket|main menu|short haul|long haul)\b/i;
-
-function extractMenuItemsFromBlocks(blocks,fallbackText){
-  const lines=[];
-  for(const block of blocks||[])for(const para of block.paragraphs||[])for(const line of para.lines||[]){
-    const words=line.words||[];
-    if(!words.length)continue;
-    const sizes=words.map(w=>w.font_size).filter(n=>n>0);
-    if(!sizes.length)continue;
-    lines.push({text:line.text||"",avgSize:sizes.reduce((a,b)=>a+b,0)/sizes.length,wordCount:words.length});
-  }
-  const sizes=lines.map(l=>l.avgSize).sort((a,b)=>a-b);
-  const median=sizes.length?sizes[Math.floor(sizes.length/2)]:0;
-  const threshold=median*1.2;
-  const headings=median?dedupeScanLines(lines
-    .filter(l=>l.avgSize>=threshold&&l.wordCount<=8&&!l.text.includes(":"))
-    .map(l=>cleanScanLine(l.text))
-    .filter(isUsableScanLine)
-    .filter(line=>!SCAN_FIELD_LABELS.test(line))):[];
-  if(headings.length)return headings.slice(0,40);
-  return extractMenuItemsFromText(fallbackText);
-}
-
 async function scanMenuPhoto(file){
   state.scanning=true;state.scanError=null;render();
   try{
-    const canvas=await resizeImageForOcr(file);
-    const worker=await getTesseractWorker();
-    const{data}=await worker.recognize(canvas,{},{blocks:true,text:true,hocr:false,tsv:false});
-    const items=extractMenuItemsFromBlocks(data.blocks,data.text);
+    const image=await resizeImageToBase64(file);
+    const response=await fetch("/api/scan-menu",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({image})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||"Scan failed");
+    const items=Array.isArray(data.items)?data.items:[];
     if(items.length)state.scanDraft=items;
-    else state.scanError="No food items found in that photo. Try a clearer, closer picture or add items manually.";
+    else state.scanError="No food items found in that photo. Try a clearer picture or add items manually.";
   }catch{
-    state.scanError=navigator.onLine?"Couldn’t read that menu. Try again or add items manually.":"Couldn’t load the offline scanner. Connect once to download it, then it works with no connection.";
+    state.scanError=navigator.onLine?"Couldn’t read that menu. Try again or add items manually.":"You’re offline — connect to scan a menu.";
   }finally{
     state.scanning=false;render();
   }
@@ -331,6 +274,8 @@ async function scanMenuPhoto(file){
 
 document.body.insertAdjacentHTML("beforeend",'<input type="file" id="menuPhotoInput" accept="image/*" capture="environment" hidden>');
 document.getElementById("menuPhotoInput").addEventListener("change",event=>{const file=event.target.files[0];event.target.value="";if(file)scanMenuPhoto(file)});
+window.addEventListener("online",render);
+window.addEventListener("offline",render);
 
 render();
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js");
