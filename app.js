@@ -41,7 +41,7 @@ const state = {
   theme: localStorage.getItem("cabin-drinks-theme") || "light",
   seat: "8C", category: "Juice & Water", mode: "take", orders: saved, activeDrink: null,
   foodMenu: JSON.parse(localStorage.getItem("cabin-drinks-food-menu") || "[]"), foodSetup:false, foodDraft:{name:"",qty:1},
-  scanning:false, scanError:null, scanDraft:null,
+  scanning:false, scanError:null, scanDraft:null, scanNewItem:"",
   builder: {spirit:null, mixer:null, pour:1, modifiers:["Ice"]}
 };
 if (state.cabin === "first") state.seat = "1A";
@@ -136,7 +136,7 @@ function mixedBuilder(active) {
 
 function scanReviewPanel(){
   const count=state.scanDraft.length;
-  return `<div class="scan-review"><div class="scan-review-title"><strong>Review scanned items</strong><span>Fix anything that isn’t right, then add the rest to today’s menu.</span></div><div class="scan-review-list">${state.scanDraft.map((name,index)=>`<div class="scan-review-row"><input data-scan-name="${index}" value="${esc(name)}" aria-label="Scanned food item"><button data-scan-remove="${index}" aria-label="Remove ${esc(name)}">×</button></div>`).join("")}</div>${count?`<button class="food-add-button" data-action="scan-confirm">Add ${count} item${count===1?"":"s"} to menu</button>`:`<p class="food-setup-hint">All items removed.</p>`}<button class="scan-cancel" data-action="scan-cancel" type="button">Cancel</button></div>`;
+  return `<div class="scan-review"><div class="scan-review-title"><strong>Review scanned items</strong><span>Fix anything that isn’t right, remove what doesn’t belong, and add anything the scan missed.</span></div><div class="scan-review-list">${state.scanDraft.map((name,index)=>`<div class="scan-review-row"><input data-scan-name="${index}" value="${esc(name)}" aria-label="Scanned food item"><button data-scan-remove="${index}" aria-label="Remove ${esc(name)}">×</button></div>`).join("")}</div><div class="scan-review-add"><input id="scanNewItem" value="${esc(state.scanNewItem)}" placeholder="Add a missed item" aria-label="New scanned item"><button data-action="scan-add-item" type="button" ${state.scanNewItem.trim()?"":"disabled"}>+ Add</button></div>${count?`<button class="food-add-button" data-action="scan-confirm">Add ${count} item${count===1?"":"s"} to menu</button>`:`<p class="food-setup-hint">All items removed.</p>`}<button class="scan-cancel" data-action="scan-cancel" type="button">Cancel</button></div>`;
 }
 
 function scanControls(){
@@ -182,8 +182,12 @@ function deliverView() {
 function empty(){return '<div class="empty"><strong>No orders yet</strong><span>Choose a seat to begin.</span></div>'}
 function render(){app.innerHTML=header()+(state.mode==="take"?takeView():state.mode==="prepare"?prepareView():deliverView())}
 
-app.addEventListener("input",event=>{if(event.target.id==="newFoodName"){state.foodDraft.name=event.target.value;const button=app.querySelector('[data-action="food-add"]');if(button)button.disabled=!state.foodDraft.name.trim()}});
-app.addEventListener("change",event=>{if(event.target.matches('[data-action="plane"]'))state.plane=event.target.value;if(event.target.dataset.foodName){const item=state.foodMenu.find(x=>x.id===event.target.dataset.foodName);if(item&&event.target.value.trim())item.name=event.target.value.trim()}if(event.target.dataset.scanName!==undefined&&state.scanDraft)state.scanDraft[Number(event.target.dataset.scanName)]=event.target.value;save();render()});
+app.addEventListener("input",event=>{if(event.target.id==="newFoodName"){state.foodDraft.name=event.target.value;const button=app.querySelector('[data-action="food-add"]');if(button)button.disabled=!state.foodDraft.name.trim()}if(event.target.id==="scanNewItem"){state.scanNewItem=event.target.value;const button=app.querySelector('[data-action="scan-add-item"]');if(button)button.disabled=!state.scanNewItem.trim()}});
+app.addEventListener("change",event=>{
+  if(event.target.matches('[data-action="plane"]')){state.plane=event.target.value;save();render();return}
+  if(event.target.dataset.foodName){const item=state.foodMenu.find(x=>x.id===event.target.dataset.foodName);if(item&&event.target.value.trim())item.name=event.target.value.trim();save();render();return}
+  if(event.target.dataset.scanName!==undefined&&state.scanDraft){state.scanDraft[Number(event.target.dataset.scanName)]=event.target.value;save();render();return}
+});
 app.addEventListener("click",event=>{
   const remove=event.target.closest("[data-remove-drink]");
   if(remove){const order=currentOrder();order.drinks.splice(Number(remove.dataset.removeDrink),1);if(!order.drinks.length&&!(order.foods||[]).length)delete state.orders[state.seat];state.activeDrink=null;save();render();return}
@@ -217,6 +221,7 @@ app.addEventListener("click",event=>{
   if(target.dataset.action==="food-add"){const name=state.foodDraft.name.trim(),qty=state.foodDraft.qty;if(name){state.foodMenu.push({id:`food-${Date.now()}`,name,loaded:qty});state.foodDraft={name:"",qty:1};state.foodSetup=true}}
   if(target.dataset.action==="scan-menu")document.getElementById("menuPhotoInput")?.click();
   if(target.dataset.scanRemove!==undefined&&state.scanDraft)state.scanDraft.splice(Number(target.dataset.scanRemove),1);
+  if(target.dataset.action==="scan-add-item"&&state.scanDraft){const name=state.scanNewItem.trim();if(name){state.scanDraft.push(name);state.scanNewItem=""}}
   if(target.dataset.action==="scan-confirm"&&state.scanDraft){state.scanDraft.forEach((name,index)=>{const trimmed=name.trim();if(trimmed)state.foodMenu.push({id:`food-${Date.now()}-${index}`,name:trimmed,loaded:1})});state.scanDraft=null;state.scanError=null}
   if(target.dataset.action==="scan-cancel"){state.scanDraft=null;state.scanError=null}
   if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=state.orders[state.seat].drinks.length?0:null;state.category=state.orders[state.seat].foods?.length?"Food":state.orders[state.seat].drinks[0]?.category||"Juice & Water";state.mode="take"}
