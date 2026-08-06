@@ -31,6 +31,18 @@ export async function onRequestPost({request,env}){
     else{console.error('Supabase insert failed',insertResponse.status,errorText);return json({error:'We couldn’t save your signup. Please try again.'},502);}
   }
 
+  if(env.RESEND_AUDIENCE_ID){
+    const audienceResponse=await fetch(`https://api.resend.com/audiences/${env.RESEND_AUDIENCE_ID}/contacts`,{
+      method:'POST',
+      headers:{authorization:`Bearer ${env.RESEND_API_KEY}`,'content-type':'application/json'},
+      body:JSON.stringify({email,unsubscribed:false})
+    });
+    if(!audienceResponse.ok){
+      const errorText=await audienceResponse.text();
+      console.error('Resend audience add failed',audienceResponse.status,errorText);
+    }
+  }
+
   if(!alreadySubscribed){
     const from=env.FROM_EMAIL||'Cabin Drinks <hi@hizach.com>';
     const safeEmail=escapeHtml(email);
