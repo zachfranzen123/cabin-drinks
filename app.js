@@ -41,6 +41,7 @@ const state = {
   theme: localStorage.getItem("cabin-drinks-theme") || "light",
   seat: "8C", category: "Juice & Water", mode: "take", orders: saved, activeDrink: null,
   foodMenu: JSON.parse(localStorage.getItem("cabin-drinks-food-menu") || "[]"), foodSetup:false, foodDraft:{name:"",qty:1},
+  scanning:false, scanError:null, scanDraft:null,
   builder: {spirit:null, mixer:null, pour:1, modifiers:["Ice"]}
 };
 if (state.cabin === "first") state.seat = "1A";
@@ -133,9 +134,20 @@ function mixedBuilder(active) {
   return `<div class="mixed-builder"><div class="builder-title common-title"><strong>Common Drinks</strong><span>Tap once to add the complete recipe</span></div><div class="quick-builds">${Object.entries(quickMixedRecipes).map(([key,recipe])=>`<button data-quick-mixed="${key}"><strong>${esc(recipe.name)}</strong><span>${esc(label(recipe.spirit))} · ${esc(label(recipe.mixer))}</span><em>+ Add</em></button>`).join("")}</div>${commonEditor}<div class="builder-title"><strong>Build Your Own</strong><span>Choose an alcohol and what to mix it with</span></div><label>1 · Alcohol</label><div class="builder-scroll">${alcoholOptions.map(item=>`<button data-build-spirit="${esc(item)}" class="${b.spirit===item?"active":""}">${esc(label(item))}</button>`).join("")}</div><label>2 · Mix with</label><div class="builder-scroll">${mixerOptions.map(item=>`<button data-build-mixer="${esc(item)}" class="${b.mixer===item?"active":""}">${esc(label(item))}</button>`).join("")}</div>${b.spirit?.includes("Sparkling Wine")?"":`<label>3 · Pour</label><div class="builder-options"><button data-build-pour="1" class="${b.pour===1?"active":""}">Single</button><button data-build-pour="2" class="${b.pour===2?"active":""}">Double</button></div>`}<label>${b.spirit?.includes("Sparkling Wine")?"3":"4"} · Finish</label><div class="builder-scroll">${["Ice","No Ice","Lemon packet","Lime packet","Grapefruit packet"].map(mod=>`<button data-builder-modifier="${mod}" class="${b.modifiers.includes(mod)?"active":""}">${mod}</button>`).join("")}</div><button data-add-mixed="custom" class="add-build" ${b.spirit&&b.mixer?"":"disabled"}>Add mixed drink to ${state.seat}</button></div>`;
 }
 
+function scanReviewPanel(){
+  const count=state.scanDraft.length;
+  return `<div class="scan-review"><div class="scan-review-title"><strong>Review scanned items</strong><span>Fix anything that isn’t right, then add the rest to today’s menu.</span></div><div class="scan-review-list">${state.scanDraft.map((name,index)=>`<div class="scan-review-row"><input data-scan-name="${index}" value="${esc(name)}" aria-label="Scanned food item"><button data-scan-remove="${index}" aria-label="Remove ${esc(name)}">×</button></div>`).join("")}</div>${count?`<button class="food-add-button" data-action="scan-confirm">Add ${count} item${count===1?"":"s"} to menu</button>`:`<p class="food-setup-hint">All items removed.</p>`}<button class="scan-cancel" data-action="scan-cancel" type="button">Cancel</button></div>`;
+}
+
+function scanControls(){
+  if(state.scanDraft)return scanReviewPanel();
+  const online=typeof navigator==="undefined"||navigator.onLine;
+  return `<div class="scan-menu-block"><button class="scan-menu-button" data-action="scan-menu" type="button" ${online&&!state.scanning?"":"disabled"}>${state.scanning?"Scanning…":"📷 Scan a menu photo"}</button>${!online?`<span class="scan-hint">Connect to scan a menu</span>`:state.scanError?`<span class="scan-hint scan-hint-error">${esc(state.scanError)}</span>`:""}</div>`;
+}
+
 function foodPanel(order){
   if(state.foodSetup||!state.foodMenu.length){
-    return `<div class="food-setup"><div class="food-setup-title"><div><strong>First Class food</strong><span>Enter today’s loaded items and quantities</span></div>${state.foodMenu.length?`<button data-action="food-done">Done</button>`:""}</div><div class="food-menu-list">${state.foodMenu.map(item=>`<div><input data-food-name="${item.id}" value="${esc(item.name)}" aria-label="Food name"><span>Loaded</span><button data-food-load="${item.id}" data-delta="-1" aria-label="Reduce ${esc(item.name)}">−</button><strong>${item.loaded}</strong><button data-food-load="${item.id}" data-delta="1" aria-label="Increase ${esc(item.name)}">+</button><button class="food-delete" data-food-delete="${item.id}" aria-label="Delete ${esc(item.name)}">×</button></div>`).join("")}</div><div class="food-add"><label><span>New food item</span><input id="newFoodName" value="${esc(state.foodDraft.name)}" placeholder="Example: Fruit &amp; cheese"></label><div class="food-draft-qty"><span>Loaded</span><div><button data-new-food-delta="-1" aria-label="Reduce loaded quantity">−</button><strong>${state.foodDraft.qty}</strong><button data-new-food-delta="1" aria-label="Increase loaded quantity">+</button></div></div><button class="food-add-button" data-action="food-add" ${state.foodDraft.name.trim()?"":"disabled"}>Add to menu</button></div>${state.foodMenu.length?`<p class="food-setup-hint">Add another item, or tap Done when today’s menu is ready.</p>`:""}</div>`;
+    return `<div class="food-setup"><div class="food-setup-title"><div><strong>First Class food</strong><span>Enter today’s loaded items and quantities</span></div>${state.foodMenu.length?`<button data-action="food-done">Done</button>`:""}</div><div class="food-menu-list">${state.foodMenu.map(item=>`<div><input data-food-name="${item.id}" value="${esc(item.name)}" aria-label="Food name"><span>Loaded</span><button data-food-load="${item.id}" data-delta="-1" aria-label="Reduce ${esc(item.name)}">−</button><strong>${item.loaded}</strong><button data-food-load="${item.id}" data-delta="1" aria-label="Increase ${esc(item.name)}">+</button><button class="food-delete" data-food-delete="${item.id}" aria-label="Delete ${esc(item.name)}">×</button></div>`).join("")}</div>${scanControls()}${state.scanDraft?"":`<div class="food-add"><label><span>New food item</span><input id="newFoodName" value="${esc(state.foodDraft.name)}" placeholder="Example: Fruit &amp; cheese"></label><div class="food-draft-qty"><span>Loaded</span><div><button data-new-food-delta="-1" aria-label="Reduce loaded quantity">−</button><strong>${state.foodDraft.qty}</strong><button data-new-food-delta="1" aria-label="Increase loaded quantity">+</button></div></div><button class="food-add-button" data-action="food-add" ${state.foodDraft.name.trim()?"":"disabled"}>Add to menu</button></div>${state.foodMenu.length?`<p class="food-setup-hint">Add another item, or tap Done when today’s menu is ready.</p>`:""}`}</div>`;
   }
   return `<div class="food-picker"><div class="food-summary"><span>${state.foodMenu.reduce((n,item)=>n+foodRemaining(item),0)} remaining</span><button data-action="food-manage">Edit menu</button></div><div class="food-grid">${state.foodMenu.map(item=>{const remaining=foodRemaining(item);return `<button data-food-add="${item.id}" ${remaining?"":"disabled"}><strong>${esc(item.name)}</strong><span>${remaining?`${remaining} left`:"Sold out"}</span><em>${remaining?"+ Add":""}</em></button>`}).join("")}</div></div>`;
 }
@@ -172,7 +184,7 @@ function empty(){return '<div class="empty"><strong>No orders yet</strong><span>
 function render(){app.innerHTML=header()+(state.mode==="take"?takeView():state.mode==="prepare"?prepareView():deliverView())}
 
 app.addEventListener("input",event=>{if(event.target.id==="newFoodName"){state.foodDraft.name=event.target.value;const button=app.querySelector('[data-action="food-add"]');if(button)button.disabled=!state.foodDraft.name.trim()}});
-app.addEventListener("change",event=>{if(event.target.matches('[data-action="plane"]'))state.plane=event.target.value;if(event.target.dataset.foodName){const item=state.foodMenu.find(x=>x.id===event.target.dataset.foodName);if(item&&event.target.value.trim())item.name=event.target.value.trim()}save();render()});
+app.addEventListener("change",event=>{if(event.target.matches('[data-action="plane"]'))state.plane=event.target.value;if(event.target.dataset.foodName){const item=state.foodMenu.find(x=>x.id===event.target.dataset.foodName);if(item&&event.target.value.trim())item.name=event.target.value.trim()}if(event.target.dataset.scanName!==undefined&&state.scanDraft)state.scanDraft[Number(event.target.dataset.scanName)]=event.target.value;save();render()});
 app.addEventListener("click",event=>{
   const remove=event.target.closest("[data-remove-drink]");
   if(remove){const order=currentOrder();order.drinks.splice(Number(remove.dataset.removeDrink),1);if(!order.drinks.length&&!(order.foods||[]).length)delete state.orders[state.seat];state.activeDrink=null;save();render();return}
@@ -204,6 +216,10 @@ app.addEventListener("click",event=>{
   if(target.dataset.action==="food-manage")state.foodSetup=true;
   if(target.dataset.action==="food-done")state.foodSetup=false;
   if(target.dataset.action==="food-add"){const name=state.foodDraft.name.trim(),qty=state.foodDraft.qty;if(name){state.foodMenu.push({id:`food-${Date.now()}`,name,loaded:qty});state.foodDraft={name:"",qty:1};state.foodSetup=true}}
+  if(target.dataset.action==="scan-menu")document.getElementById("menuPhotoInput")?.click();
+  if(target.dataset.scanRemove!==undefined&&state.scanDraft)state.scanDraft.splice(Number(target.dataset.scanRemove),1);
+  if(target.dataset.action==="scan-confirm"&&state.scanDraft){state.scanDraft.forEach((name,index)=>{const trimmed=name.trim();if(trimmed)state.foodMenu.push({id:`food-${Date.now()}-${index}`,name:trimmed,loaded:1})});state.scanDraft=null;state.scanError=null}
+  if(target.dataset.action==="scan-cancel"){state.scanDraft=null;state.scanError=null}
   if(target.dataset.edit){state.seat=target.dataset.edit;state.activeDrink=state.orders[state.seat].drinks.length?0:null;state.category=state.orders[state.seat].foods?.length?"Food":state.orders[state.seat].drinks[0]?.category||"Juice & Water";state.mode="take"}
   if(target.dataset.deliver)state.orders[target.dataset.deliver].delivered=!state.orders[target.dataset.deliver].delivered;
   if(target.dataset.action==="orientation")state.orientation=state.orientation==="front"?"rear":"front";
@@ -212,5 +228,49 @@ app.addEventListener("click",event=>{
   if(target.dataset.action==="clear-all"&&confirm("Clear all orders and remove today’s First Class food menu? This starts a completely fresh flight.")){state.orders={};state.foodMenu=[];state.foodDraft={name:"",qty:1};state.foodSetup=false;state.activeDrink=null;state.mode="take"}
   save();render();
 });
+
+function resizeImageToBase64(file){
+  return new Promise((resolve,reject)=>{
+    const reader=new FileReader();
+    reader.onerror=()=>reject(reader.error);
+    reader.onload=()=>{
+      const img=new Image();
+      img.onerror=reject;
+      img.onload=()=>{
+        const maxDim=1600,scale=Math.min(1,maxDim/Math.max(img.width,img.height));
+        const canvas=document.createElement("canvas");
+        canvas.width=Math.round(img.width*scale);
+        canvas.height=Math.round(img.height*scale);
+        canvas.getContext("2d").drawImage(img,0,0,canvas.width,canvas.height);
+        resolve(canvas.toDataURL("image/jpeg",0.82).split(",")[1]);
+      };
+      img.src=reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+async function scanMenuPhoto(file){
+  state.scanning=true;state.scanError=null;render();
+  try{
+    const image=await resizeImageToBase64(file);
+    const response=await fetch("/api/scan-menu",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({image})});
+    const data=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(data.error||"Scan failed");
+    const items=Array.isArray(data.items)?data.items:[];
+    if(items.length)state.scanDraft=items;
+    else state.scanError="No food items found in that photo. Try a clearer picture or add items manually.";
+  }catch{
+    state.scanError=navigator.onLine?"Couldn’t read that menu. Try again or add items manually.":"You’re offline — connect to scan a menu.";
+  }finally{
+    state.scanning=false;render();
+  }
+}
+
+document.body.insertAdjacentHTML("beforeend",'<input type="file" id="menuPhotoInput" accept="image/*" capture="environment" hidden>');
+document.getElementById("menuPhotoInput").addEventListener("change",event=>{const file=event.target.files[0];event.target.value="";if(file)scanMenuPhoto(file)});
+window.addEventListener("online",render);
+window.addEventListener("offline",render);
+
 render();
 if("serviceWorker"in navigator)navigator.serviceWorker.register("./sw.js");
