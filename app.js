@@ -151,7 +151,7 @@ function scanReviewPanel(){
 function scanControls(){
   if(state.scanDraft)return scanReviewPanel();
   const online=navigator.onLine;
-  return `<div class="scan-menu-block"><button class="scan-menu-button" data-action="scan-menu" type="button" ${online&&!state.scanning?"":"disabled"}>${state.scanning?"Reading menu…":"📷 Scan a menu photo"}</button>${!online?`<span class="scan-hint">Connect to scan a menu</span>`:state.scanError?`<span class="scan-hint scan-hint-error">${esc(state.scanError)}</span>`:`<span class="scan-hint">Uses Claude to read item names off a photo. Requires a connection.</span>`}</div>`;
+  return `<div class="scan-menu-block"><button class="scan-menu-button" data-action="scan-menu" type="button" ${online&&!state.scanning?"":"disabled"}>${state.scanning?"Reading menu…":"📷 Scan a menu photo"}</button>${!online?`<span class="scan-hint">Connect to scan a menu</span>`:state.scanError?`<span class="scan-hint scan-hint-error">${esc(state.scanError)}</span>`:`<span class="scan-hint">Uses AI to read item names off a photo. Requires a connection.</span>`}</div>`;
 }
 
 function foodPanel(order){
