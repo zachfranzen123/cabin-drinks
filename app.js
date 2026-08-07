@@ -273,7 +273,7 @@ async function scanMenuPhoto(file){
   }
 }
 
-document.body.insertAdjacentHTML("beforeend",'<input type="file" id="menuPhotoInput" accept="image/*" capture="environment" hidden>');
+document.body.insertAdjacentHTML("beforeend",'<input type="file" id="menuPhotoInput" accept="image/*" hidden>');
 document.getElementById("menuPhotoInput").addEventListener("change",event=>{const file=event.target.files[0];event.target.value="";if(file)scanMenuPhoto(file)});
 window.addEventListener("online",render);
 window.addEventListener("offline",render);
