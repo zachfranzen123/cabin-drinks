@@ -1,4 +1,4 @@
-const CACHE="cabin-drinks-v34";
+const CACHE="cabin-drinks-v35";
 const SHELL=["./","./index.html","./app.html","./faq.html","./faq.css","./legal.html","./legal.css","./landing.css","./history.css","./about.css","./support.css","./showcase.css","./install.css","./hype.css","./landing.js","./updater.js","./style.css","./multi-order.css","./help.css","./v7.css","./v8.css","./delivery-details.css","./v10.css","./food.css","./usability.css","./v13.css","./app.js","./drink-feedback.js","./hot-water.js","./manifest.json","./app-icon.svg","./app-seat-map.png","./app-prepare-orders.png","./A1C049B2-7FF4-41EC-9220-E4BF0FF22D71.png","./faq-scan-1-photo.png","./faq-scan-2-review.png","./faq-scan-3-confirmed.png","./scan-demo.mp4"];
 
 // Safari refuses to fulfill a navigation with a redirected Response (e.g. Cloudflare Pages'
