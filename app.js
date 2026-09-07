@@ -1,4 +1,4 @@
-const APP_VERSION = "15";
+const APP_VERSION = "16";
 const aircraft = ["737-700", "737-800", "737 MAX 8", "737-900", "737 MAX 9"];
 const premiumSeatLetters = ["A", "B", "C", "D", "E", "F"];
 const firstSeatLetters = ["A", "C", "D", "F"];
@@ -76,7 +76,7 @@ const quickMixedRecipes = {
   vodkaSoda:{name:"Vodka Soda",spirit:"Tito’s Handmade Vodka",mixer:"Polar Original Seltzer",pour:1,modifiers:["Ice","Lime packet"]},
   rumCoke:{name:"Rum & Coke",spirit:"Bacardí Rum",mixer:"Coca-Cola",pour:1,modifiers:["Ice"]}
 };
-const spiritType = spirit => spirit.includes("Gin") ? "Gin" : spirit.includes("Vodka") ? "Vodka" : spirit.includes("Rum") ? "Rum" : spirit.includes("Tequila") ? "Tequila" : spirit.includes("Bourbon") ? "Bourbon" : spirit.includes("Scotch") ? "Scotch" : spirit.includes("Irish Cream") ? "Irish Cream" : "Whiskey";
+const spiritType = spirit => label(spirit);
 const mixedName = drink => quickMixedRecipes[drink.preset]?.name || `${spiritType(drink.spirit)} & ${label(drink.mixer).replace(" Water","").replace("Polar Original ","")}`;
 const displayName = drink => drink.category === "Mixed Drinks" ? mixedName(drink) + (drink.combineWith ? ` & ${label(drink.combineWith)}` : "") : drink.combineWith ? `${drink.drink} & ${label(drink.combineWith)}` : drink.drink;
 const combinableCategories = new Set(["Juice & Water", "Sodas", "Mixers", "Mixed Drinks"]);
