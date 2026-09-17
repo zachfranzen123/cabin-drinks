@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#202423">
 <title>Cabin Drinks · Offline food and beverage service pad</title>
-<meta name="description" content="A fast, offline-friendly food and beverage order pad designed for inflight service.">
+<meta name="description" content="A private, offline food and beverage service pad with seat notes, cabin-shaped delivery views, and First Class food tracking.">
 <link rel="manifest" href="./manifest.json">
 <link rel="icon" href="./app-icon.svg">
 <link rel="apple-touch-icon" href="./app-icon.svg">
@@ -34,11 +34,11 @@
 <div class="hero-copy">
 <p class="eyebrow">Built for inflight service</p>
 <div class="hero-badges">
-<span class="current-version">Version 15 · Current</span>
+<span class="current-version">Version 19 · Current</span>
 <a class="faq-badge" href="./faq.html">FAQ</a>
 </div>
 <h1>Take food &amp; drink orders.<br>Skip the scribbled notes.</h1>
-<p class="intro">Tap a seat, add beverages and First Class food choices, prepare everything in the galley, and check complete orders off during delivery. After installation, it works without an internet connection.</p>
+<p class="intro">Tap a seat, add drinks, food, or a free-form note, prepare everything in the galley, then deliver from a cabin view that matches the direction you’re walking. Once installed, it works without an internet connection.</p>
 <div class="actions">
 <a class="primary" href="./app.html">Open Cabin Drinks</a>
 <button id="installButton" class="secondary install-action" type="button">Install Cabin Drinks</button>
@@ -60,22 +60,36 @@
 <article>
 <span>01</span>
 <h2>Take</h2>
-<p>Choose First Class or Premium, tap a seat, then add drinks and First Class food choices.</p>
+<p>Choose First Class or Premium, tap a seat, then add drinks, First Class food choices, or a passenger-specific service note.</p>
 </article>
 <article>
 <span>02</span>
 <h2>Prepare</h2>
-<p>See food tallies and complete galley instructions grouped by seat, including quantities and modifiers.</p>
+<p>See food tallies, seat notes, and complete galley instructions grouped by seat, including quantities and modifiers.</p>
 </article>
 <article>
 <span>03</span>
 <h2>Deliver</h2>
-<p>Return to the cabin and confirm each seat’s complete food-and-beverage order as it is delivered.</p>
+<p>Follow the cabin-shaped map in your walking direction and confirm each food-and-beverage order as it is delivered.</p>
 </article>
+</section>
+<section class="cabin-feature">
+<div class="cabin-feature-copy">
+<p class="eyebrow">New in Version 19</p>
+<h2>Glance down. Know exactly where to go.</h2>
+<p>Delivery now mirrors the physical cabin and the direction you’re walking. From the forward galley, F stays on your left, A stays on your right, and each row appears in service order.</p>
+<div class="cabin-feature-points"><span>✓ First Class &amp; Premium</span><span>✓ Front or rear first</span><span>✓ Notes stay with the seat</span></div>
+</div>
+<div class="cabin-demo" aria-label="Example First Class delivery layout showing seats on each side of the aisle">
+<div class="cabin-demo-head"><span>Your left</span><i>Aisle</i><span>Your right</span></div>
+<strong class="cabin-demo-row">Row 1</strong>
+<div class="cabin-demo-pair"><article><b>1F</b><span>Coca-Cola</span><small>Ice</small></article><i></i><article><b>1A</b><span>Polar Seltzer</span><small>Standard</small></article></div>
+<div class="cabin-demo-pair"><article><b>1D</b><span>Mimosa</span><small>Sparkling Wine · Orange Juice</small></article><i></i><article class="has-note"><b>1C</b><em>Seat note</em><span>Extra time</span></article></div>
+</div>
 </section>
 <section class="scan-feature">
 <div class="scan-feature-copy">
-<p class="eyebrow">New in Version 15</p>
+<p class="eyebrow">First Class setup</p>
 <h2>Scan a menu instead of typing it in.</h2>
 <p>Take a photo of the printed First Class menu and AI reads the food item names for you. Fix anything that’s off, set today’s loaded quantity, remove what doesn’t belong, and add anything it missed—nothing goes on the menu until you confirm.</p>
 <a class="text-button" href="./faq.html#scan-menu">See how it works</a>
@@ -88,15 +102,15 @@
 <div>
 <p class="eyebrow">Improved by crew feedback</p>
 <h2>Built around how service actually happens.</h2>
-<p class="service-intro">Recent requests from working crew have made Cabin Drinks quicker to navigate, clearer in the galley, and more dependable when the cabin goes offline.</p>
+<p class="service-intro">Requests from working crew continue to make Cabin Drinks quicker to navigate, clearer in the galley, and more dependable when the cabin goes offline.</p>
 <div class="latest-features">
 <article>
-<strong>Water &amp; coffee first</strong>
-<span>Most-requested categories are now immediately available.</span>
+<strong>Seat-by-seat notes</strong>
+<span>Save unusual requests or service reminders even when no drink is ordered.</span>
 </article>
 <article>
-<strong>Larger category grid</strong>
-<span>Big controls replace the horizontally scrolling category strip.</span>
+<strong>Cabin-shaped delivery</strong>
+<span>Orders stay on the correct side of the aisle for the direction you’re walking.</span>
 </article>
 <article>
 <strong>First Class food tally</strong>
@@ -107,8 +121,8 @@
 <span>Creamers, sweeteners, ice, citrus, doubles, and coffee additions stay with the order.</span>
 </article>
 <article>
-<strong>Faster mixed drinks</strong>
-<span>Common recipes, custom builds, and their editors stay together.</span>
+<strong>Multiple drinks per seat</strong>
+<span>Keep every beverage, quantity, and custom mixed drink together.</span>
 </article>
 <article>
 <strong>Airplane-mode ready</strong>
@@ -173,11 +187,11 @@
 <div class="guide-grid">
 <article>
 <strong>1</strong>
-<p>Select the aircraft and cabin. In First Class, set up today’s food inventory.</p>
+<p>Select the aircraft, cabin, and walking direction. In First Class, set up today’s food inventory.</p>
 </article>
 <article>
 <strong>2</strong>
-<p>Tap a seat and add each requested food item and drink.</p>
+<p>Tap a seat and add each requested food item, drink, or service note.</p>
 </article>
 <article>
 <strong>3</strong>
@@ -238,8 +252,28 @@
 <p>See how Cabin Drinks grew from a simple seat-and-drink pad into a complete offline service companion.</p>
 </div>
 <div class="release-list">
-<details class="release" open><summary><span><b>Version 14</b><strong>Easy Install &amp; Updates</strong></span><em>Current</em></summary><div><p>A guided, device-aware installation and a clearer guarantee that Cabin Drinks is ready to fly.</p><ul><li>One prominent install action with iPhone-specific guidance</li><li>Offline Ready status confirms required files are stored</li><li>Automatic update checks on launch, reconnect, and return to the app</li><li>New versions activate cleanly while saved orders remain on the device</li></ul></div></details>
-<details class="version-archive"><summary class="version-archive-toggle"><span>View previous versions</span><strong>Versions 13–1</strong></summary><div class="archived-releases">
+<details class="release" open><summary><span><b>Version 19</b><strong>Seat Notes &amp; Cabin Delivery</strong></span><em>Current</em></summary><div><p>The service flow now handles the requests that do not fit neatly on a beverage menu—and the delivery screen looks like the cabin in front of you.</p><ul><li>Free-form notes saved to any First Class or Premium seat</li><li>Notes remain visible in Prepare and Deliver</li><li>Delivery is grouped by row and split across a visible aisle</li><li>The layout follows the same walking direction selected on the seat map</li><li>“Your left · Aisle · Your right” orientation for faster glances</li></ul></div></details>
+<details class="version-archive"><summary class="version-archive-toggle"><span>View previous versions</span><strong>Versions 18–1</strong></summary><div class="archived-releases">
+<details class="release">
+<summary><span><b>Version 18</b><strong>Cabin Side Labels</strong></span><em>September 2026</em></summary>
+<div><p>A clearer two-sided delivery map with an unmistakable aisle and cabin-side guidance.</p></div>
+</details>
+<details class="release">
+<summary><span><b>Version 17</b><strong>Notes &amp; Delivery Layout</strong></span><em>September 2026</em></summary>
+<div><p>Introduced seat notes and replaced the linear delivery list with row-by-row First Class and Premium maps.</p></div>
+</details>
+<details class="release">
+<summary><span><b>Version 16</b><strong>Accurate Mixed-Drink Names</strong></span><em>September 2026</em></summary>
+<div><p>Custom drink labels now follow the actual spirit and mixer selected—including sparkling wine combinations.</p></div>
+</details>
+<details class="release">
+<summary><span><b>Version 15</b><strong>Scan the First Class Menu</strong></span><em>July 2026</em></summary>
+<div><p>Photograph a printed menu, review the detected items, and confirm loaded quantities before service.</p></div>
+</details>
+<details class="release">
+<summary><span><b>Version 14</b><strong>Easy Install &amp; Updates</strong></span><em>July 2026</em></summary>
+<div><p>A guided, device-aware installation and a clearer guarantee that Cabin Drinks is ready to fly.</p><ul><li>One prominent install action with iPhone-specific guidance</li><li>Offline Ready status confirms required files are stored</li><li>Automatic update checks on launch, reconnect, and return to the app</li><li>New versions activate cleanly while saved orders remain on the device</li></ul></div>
+</details>
 <details class="release">
 <summary>
 <span>
@@ -491,7 +525,7 @@
 <p>Independent crew utility. Always follow current company procedures, service standards, and onboard availability.</p>
 </footer>
 <div id="installSheet" class="install-sheet" hidden><button class="sheet-backdrop" type="button" data-close-install aria-label="Close installation instructions"></button><section class="sheet-panel" role="dialog" aria-modal="true" aria-labelledby="installSheetTitle"><div class="sheet-handle" aria-hidden="true"></div><button class="sheet-close" type="button" data-close-install aria-label="Close">×</button><p class="eyebrow" id="installDeviceLabel">Install on iPhone</p><h2 id="installSheetTitle">Add Cabin Drinks to your Home Screen</h2><div id="installSteps" class="install-steps"></div><button id="installContinue" class="primary sheet-action" type="button">Got it</button><p class="sheet-note">After adding it to your Home Screen, launch Cabin Drinks once while online to finish offline setup.</p></section></div>
-<div id="updateToast" class="update-toast" hidden role="status"><span>Cabin Drinks was updated.</span><strong>Version 15</strong></div>
+<div id="updateToast" class="update-toast" hidden role="status"><span>Cabin Drinks was updated.</span><strong>Version 19</strong></div>
 <script src="./updater.js" defer></script>
 <script src="./landing.js" defer>
 </script>
