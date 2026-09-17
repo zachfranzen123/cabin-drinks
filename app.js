@@ -1,4 +1,4 @@
-const APP_VERSION = "17";
+const APP_VERSION = "18";
 const aircraft = ["737-700", "737-800", "737 MAX 8", "737-900", "737 MAX 9"];
 const premiumSeatLetters = ["A", "B", "C", "D", "E", "F"];
 const firstSeatLetters = ["A", "C", "D", "F"];
@@ -206,11 +206,11 @@ function deliveryOrderCard(order) {
 
 function deliverView() {
   const basePairs=state.cabin==="first"?[["A","F"],["C","D"]]:[["A","F"],["B","E"],["C","D"]];
-  const pairs=state.orientation==="front"?basePairs:basePairs.map(([left,right])=>[right,left]);
+  const pairs=basePairs;
   const visibleRows=rows().filter(row=>pairs.some(pair=>pair.some(letter=>state.orders[`${row}${letter}`])));
   const controls=`<div class="delivery-layout-controls"><div class="delivery-cabin-tabs"><button data-cabin="first" class="${state.cabin==="first"?"active":""}">First Class</button><button data-cabin="premium" class="${state.cabin==="premium"?"active":""}">Premium</button></div><button data-action="orientation" class="orientation-button" aria-label="Reverse delivery map; currently ${state.orientation==="front"?"front to back":"back to front"}"><span class="plane ${state.orientation}">✈️</span><small>${state.orientation==="front"?"Front first":"Rear first"}</small></button></div>`;
   const map=visibleRows.map(row=>`<section class="delivery-row"><div class="delivery-row-number">Row ${row}</div><div class="delivery-seat-pairs">${pairs.map(([left,right])=>`<div class="delivery-pair">${deliveryOrderCard(state.orders[`${row}${left}`])}<div class="delivery-aisle" aria-hidden="true"></div>${deliveryOrderCard(state.orders[`${row}${right}`])}</div>`).join("")}</div></section>`).join("");
-  return `<section class="workflow-panel"><div class="workflow-heading"><div><p class="eyebrow">Cabin view</p><h2>Deliver orders</h2></div><button data-mode="prepare" class="secondary">Back</button></div>${controls}${map?`<div class="delivery-map">${map}</div>`:`<div class="empty"><strong>No ${state.cabin==="first"?"First Class":"Premium"} orders</strong><span>Choose the other cabin or add an order.</span></div>`}</section>`;
+  return `<section class="workflow-panel"><div class="workflow-heading"><div><p class="eyebrow">Cabin view</p><h2>Deliver orders</h2></div><button data-mode="prepare" class="secondary">Back</button></div>${controls}${map?`<div class="delivery-map"><div class="delivery-side-labels" aria-hidden="true"><span>Aircraft left</span><i>Aisle</i><span>Aircraft right</span></div>${map}</div>`:`<div class="empty"><strong>No ${state.cabin==="first"?"First Class":"Premium"} orders</strong><span>Choose the other cabin or add an order.</span></div>`}</section>`;
 }
 function empty(){return '<div class="empty"><strong>No orders yet</strong><span>Choose a seat to begin.</span></div>'}
 function render(){app.innerHTML=header()+(state.mode==="take"?takeView():state.mode==="prepare"?prepareView():deliverView())}
