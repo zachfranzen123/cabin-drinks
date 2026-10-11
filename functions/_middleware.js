@@ -35,7 +35,7 @@ function liveTap(request, response, env, ctx, site, opts = {}) {
     const page = response.status < 400 && (response.headers.get('content-type') || '').includes('text/html');
     if (!page && !download) return;
     const cf = request.cf || {};
-    const sent = live.record({
+    const hit = {
       site,
       host: url.hostname,
       ua: request.headers.get('user-agent'),
@@ -47,7 +47,17 @@ function liveTap(request, response, env, ctx, site, opts = {}) {
       latitude: cf.latitude,
       longitude: cf.longitude,
       colo: cf.colo,
-    });
+    };
+    // RPC when the binding supports it; otherwise a plain request through the
+    // same binding (Pages projects on older compatibility dates).
+    const sent =
+      typeof live.record === 'function'
+        ? live.record(hit)
+        : live.fetch('https://hizach-live/__record', {
+            method: 'POST',
+            headers: { 'content-type': 'application/json', 'x-live-tap': '1' },
+            body: JSON.stringify(hit),
+          });
     if (sent && typeof sent.catch === 'function') ctx.waitUntil(sent.catch(() => {}));
   } catch {
     // Never let the board break a site.
