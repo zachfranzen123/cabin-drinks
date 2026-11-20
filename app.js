@@ -1,4 +1,4 @@
-const APP_VERSION = "19";
+const APP_VERSION = "20";
 const aircraft = ["737-700", "737-800", "737 MAX 8", "737-900", "737 MAX 9"];
 const premiumSeatLetters = ["A", "B", "C", "D", "E", "F"];
 const firstSeatLetters = ["A", "C", "D", "F"];
