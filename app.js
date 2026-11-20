@@ -4,18 +4,18 @@ const premiumSeatLetters = ["A", "B", "C", "D", "E", "F"];
 const firstSeatLetters = ["A", "C", "D", "F"];
 const menu = {
   "Mixed Drinks": [],
-  "Mixers": ["Tonic Water", "Polar Original Seltzer", "Polar Cranberry Lime Seltzer", "Canada Dry Ginger Ale", "Bloody Mary Mix"],
+  "Mixers": ["Tonic Water", "Seltzer Water", "Blueberry Pomegranate Sparkling Water", "Ginger Ale", "Bloody Mary Mix"],
   "Sodas": ["Coca-Cola", "Diet Coke", "Coke Zero", "Sprite"],
-  "Alcohol": ["Tito’s Handmade Vodka", "Buffalo Trace Bourbon", "Jack Daniel’s Whiskey", "Glenfarclas Scotch", "Aviation Gin", "Bacardí Rum", "Dulce Vida Organic Tequila Blanco", "Crater Lake Hazelnut Espresso Vodka", "Five Farms Irish Cream", "Broken Earth Red Blend", "Waterbrook White Blend", "Cuvée 89 Brut Sparkling Wine", "Fremont Cloud Cruiser IPA", "Fremont Golden Pilsner", "Straightaway Blanco Margarita", "Straightaway Oregon Old Fashioned", "HOP WTR Blood Orange"],
+  "Alcohol": ["Tito’s Handmade Vodka", "Buffalo Trace Bourbon", "Jack Daniel’s Whiskey", "Glenfarclas Scotch", "Aviation Gin", "Bacardí Rum", "Dulce Vida Organic Tequila Blanco", "Crater Lake Hazelnut Espresso Vodka", "Five Farms Irish Cream", "Broken Earth GSM Red Blend", "Canoe Ridge Chardonnay", "Cuvée 89 Brut Sparkling Wine", "Fremont Cloud Cruiser IPA", "Fremont Golden Pilsner", "Straightaway Last Word", "Straightaway Oregon Old Fashioned", "HOP WTR Blood Orange"],
   "Coffee & Teas": ["Stumptown Coffee", "Stumptown Decaf Coffee", "Stash English Breakfast Tea", "Stash Peppermint Tea", "Stash Jasmine Blossom Green Tea", "Stumptown Cold Brew Copilot"],
   "Juice & Water": ["Boxed Water", "Apple Juice", "Cranberry Juice", "Orange Juice", "Passion Orange Guava Juice"]
 };
 const serviceCategories = ["Juice & Water", "Coffee & Teas", "Mixed Drinks", "Sodas", "Alcohol", "Mixers"];
 const shortNames = {
-  "Broken Earth Red Blend":"Red Wine", "Waterbrook White Blend":"White Wine", "Cuvée 89 Brut Sparkling Wine":"Sparkling Wine",
+  "Broken Earth GSM Red Blend":"Red Wine", "Canoe Ridge Chardonnay":"Chardonnay", "Cuvée 89 Brut Sparkling Wine":"Sparkling Wine",
   "Tito’s Handmade Vodka":"Vodka", "Buffalo Trace Bourbon":"Bourbon", "Jack Daniel’s Whiskey":"Whiskey", "Glenfarclas Scotch":"Scotch",
   "Aviation Gin":"Gin", "Bacardí Rum":"Rum", "Dulce Vida Organic Tequila Blanco":"Tequila", "Crater Lake Hazelnut Espresso Vodka":"Espresso Vodka", "Five Farms Irish Cream":"Irish Cream",
-  "Fremont Cloud Cruiser IPA":"IPA", "Fremont Golden Pilsner":"Pilsner", "Straightaway Blanco Margarita":"Margarita", "Straightaway Oregon Old Fashioned":"Old Fashioned", "HOP WTR Blood Orange":"Nonalcoholic Hop Water",
+  "Fremont Cloud Cruiser IPA":"IPA", "Fremont Golden Pilsner":"Pilsner", "Straightaway Last Word":"Last Word", "Straightaway Oregon Old Fashioned":"Old Fashioned", "HOP WTR Blood Orange":"Nonalcoholic Hop Water",
   "Stash Jasmine Blossom Green Tea":"Jasmine Green Tea", "Passion Orange Guava Juice":"POG Juice"
 };
 
@@ -73,16 +73,16 @@ const seatLetters = () => {
 const spirits = new Set(["Tito’s Handmade Vodka","Buffalo Trace Bourbon","Jack Daniel’s Whiskey","Glenfarclas Scotch","Aviation Gin","Bacardí Rum","Dulce Vida Organic Tequila Blanco","Crater Lake Hazelnut Espresso Vodka","Five Farms Irish Cream"]);
 const spiritOptions = [...spirits];
 const alcoholOptions = [...spiritOptions,"Cuvée 89 Brut Sparkling Wine"];
-const mixerOptions = ["Tonic Water","Polar Original Seltzer","Polar Cranberry Lime Seltzer","Canada Dry Ginger Ale","Bloody Mary Mix","Coca-Cola","Diet Coke","Coke Zero","Sprite","Cranberry Juice","Orange Juice","Apple Juice","Passion Orange Guava Juice","Stumptown Coffee","Stumptown Decaf Coffee"];
+const mixerOptions = ["Tonic Water","Seltzer Water","Blueberry Pomegranate Sparkling Water","Ginger Ale","Bloody Mary Mix","Coca-Cola","Diet Coke","Coke Zero","Sprite","Cranberry Juice","Orange Juice","Apple Juice","Passion Orange Guava Juice","Stumptown Coffee","Stumptown Decaf Coffee"];
 const quickMixedRecipes = {
   bloody:{name:"Bloody Mary",spirit:"Tito’s Handmade Vodka",mixer:"Bloody Mary Mix",pour:1,modifiers:["Ice"]},
   mimosa:{name:"Mimosa",spirit:"Cuvée 89 Brut Sparkling Wine",mixer:"Orange Juice",pour:1,modifiers:[]},
   ginTonic:{name:"Gin & Tonic",spirit:"Aviation Gin",mixer:"Tonic Water",pour:1,modifiers:["Ice","Lime packet"]},
-  vodkaSoda:{name:"Vodka Soda",spirit:"Tito’s Handmade Vodka",mixer:"Polar Original Seltzer",pour:1,modifiers:["Ice","Lime packet"]},
+  vodkaSoda:{name:"Vodka Soda",spirit:"Tito’s Handmade Vodka",mixer:"Seltzer Water",pour:1,modifiers:["Ice","Lime packet"]},
   rumCoke:{name:"Rum & Coke",spirit:"Bacardí Rum",mixer:"Coca-Cola",pour:1,modifiers:["Ice"]}
 };
 const spiritType = spirit => label(spirit);
-const mixedName = drink => quickMixedRecipes[drink.preset]?.name || `${spiritType(drink.spirit)} & ${label(drink.mixer).replace(" Water","").replace("Polar Original ","")}`;
+const mixedName = drink => quickMixedRecipes[drink.preset]?.name || `${spiritType(drink.spirit)} & ${label(drink.mixer).replace(" Water","")}`;
 const displayName = drink => drink.category === "Mixed Drinks" ? mixedName(drink) + (drink.combineWith ? ` & ${label(drink.combineWith)}` : "") : drink.combineWith ? `${drink.drink} & ${label(drink.combineWith)}` : drink.drink;
 const combinableCategories = new Set(["Juice & Water", "Sodas", "Mixers", "Mixed Drinks"]);
 const canCombine = drink => combinableCategories.has(drink.category);
